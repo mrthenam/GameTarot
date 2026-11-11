@@ -1,0 +1,20 @@
+{
+  "gameTitle": "Căn Phòng Tarot",
+  "subtitle": "Bốc một lá bài — nhận thông điệp và món quà từ vũ trụ",
+  "shopName": "Tiệm Của Bạn",
+  "turnsPerDay": 3,
+  "pityEvery": 5,
+  "voucherDays": 7,
+  "codePrefix": "TAROT",
+  "redeemNote": "Đưa mã này cho nhân viên khi thanh toán để nhận quà.",
+  "prizes": [
+    { "id": "wish",     "name": "Lời chúc may mắn",    "desc": "Vũ trụ gửi bạn một ngày tràn đầy năng lượng tích cực!", "icon": "star",      "rarity": "common",    "weight": 26, "voucher": false },
+    { "id": "turn",     "name": "Thêm 1 lượt bốc",     "desc": "Định mệnh cho bạn thêm một cơ hội — bốc tiếp ngay!",     "icon": "hourglass", "rarity": "common",    "weight": 14, "voucher": false, "extraTurns": 1 },
+    { "id": "off10",    "name": "Voucher giảm 10%",    "desc": "Giảm 10% cho hóa đơn tiếp theo.",                        "icon": "ticket",    "rarity": "common",    "weight": 24, "voucher": true },
+    { "id": "cake",     "name": "Tặng 1 bánh ngọt",    "desc": "Một phần bánh ngọt miễn phí khi mua kèm đồ uống.",       "icon": "cake",      "rarity": "rare",      "weight": 12, "voucher": true },
+    { "id": "off20",    "name": "Voucher giảm 20%",    "desc": "Giảm 20% cho hóa đơn tiếp theo.",                        "icon": "giftbox",   "rarity": "rare",      "weight": 11, "voucher": true },
+    { "id": "drink",    "name": "Miễn phí 1 đồ uống",  "desc": "Một ly đồ uống bất kỳ, size M.",                         "icon": "tea",       "rarity": "epic",      "weight": 8,  "voucher": true },
+    { "id": "lixi",     "name": "Lì xì 50.000đ",       "desc": "Phiếu quà tặng trị giá 50.000đ cho mọi món.",            "icon": "envelope",  "rarity": "epic",      "weight": 4,  "voucher": true },
+    { "id": "jackpot",  "name": "Giải Đặc Biệt",       "desc": "Combo 2 đồ uống + 2 bánh ngọt hoàn toàn miễn phí!",     "icon": "crown",     "rarity": "legendary", "weight": 1,  "voucher": true }
+  ]
+}
