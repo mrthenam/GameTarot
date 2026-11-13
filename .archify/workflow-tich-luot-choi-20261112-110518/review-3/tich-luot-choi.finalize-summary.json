@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "workflow",
+  "quality": "showcase",
+  "specification": {
+    "path": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\candidate.json",
+    "sha256": "2f2c60dc8a5a63ca4bc55f672563dcb6daac9c2eab84dac74da71b1bb0ed923a",
+    "bytes": 8562
+  },
+  "artifact": {
+    "path": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\tich-luot-choi.html",
+    "sha256": "08d582b52d3496f08a84c113938332fceb7df12573b8d0b434b6f2b1a561ed3f",
+    "bytes": 862991
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\review-3\\tich-luot-choi.finalize.json",
+    "summaryReceipt": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\review-3\\tich-luot-choi.finalize-summary.json",
+    "browserCheckReceipt": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\review-3\\tich-luot-choi.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-12T04:06:07.056Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 2291,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

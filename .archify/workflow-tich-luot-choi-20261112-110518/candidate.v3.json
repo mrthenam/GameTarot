@@ -1,0 +1,402 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Quy trình game tích lượt chơi theo chi tiêu",
+    "quality_profile": "showcase",
+    "output": ".archify/workflow-tich-luot-choi-20261112-110518/tich-luot-choi.html",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Khách hàng"
+        },
+        "frontend": {
+          "label": "Màn hình Mini App"
+        },
+        "security": {
+          "label": "Xác thực, lỗi"
+        },
+        "backend": {
+          "label": "Xử lý, quyết định"
+        },
+        "database": {
+          "label": "Ghi dữ liệu"
+        },
+        "messagebus": {
+          "label": "Đồng bộ, hàng đợi"
+        },
+        "cloud": {
+          "label": "iPOS"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "khach",
+      "label": "Khách hàng"
+    },
+    {
+      "id": "zma",
+      "label": "Zalo Mini App"
+    },
+    {
+      "id": "gs",
+      "label": "Game Server"
+    },
+    {
+      "id": "ipos",
+      "label": "iPOS"
+    }
+  ],
+  "phases": [
+    {
+      "id": "b1",
+      "label": "Bước 1 · Đăng nhập",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "b2",
+      "label": "Bước 2 · Tính số lượt",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "b3",
+      "label": "Bước 3 · Chơi, nhận quà",
+      "fromCol": 3,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "b4",
+      "label": "Bước 4 · Đồng bộ tự động",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "open",
+    "phone",
+    "auth",
+    "spend",
+    "convert",
+    "check",
+    "play",
+    "prize",
+    "record",
+    "push",
+    "syncok",
+    "logok"
+  ],
+  "nodes": [
+    {
+      "id": "open",
+      "lane": "khach",
+      "col": 0,
+      "type": "external",
+      "label": "Mở game",
+      "sublabel": "từ Zalo Mini App",
+      "icon": "start"
+    },
+    {
+      "id": "play",
+      "lane": "khach",
+      "col": 3,
+      "type": "external",
+      "label": "Chơi một lượt",
+      "icon": "person"
+    },
+    {
+      "id": "view",
+      "lane": "khach",
+      "col": 4,
+      "type": "external",
+      "label": "Xem quà, lượt còn lại",
+      "icon": "person"
+    },
+    {
+      "id": "phone",
+      "lane": "zma",
+      "col": 0,
+      "type": "frontend",
+      "label": "Lấy số điện thoại",
+      "sublabel": "xin quyền tài khoản Zalo"
+    },
+    {
+      "id": "nomore",
+      "lane": "zma",
+      "col": 2,
+      "type": "frontend",
+      "label": "Bạn đã hết lượt chơi",
+      "sublabel": "gợi ý mua thêm · kết thúc",
+      "icon": "stop"
+    },
+    {
+      "id": "wallet",
+      "lane": "zma",
+      "col": 4,
+      "type": "frontend",
+      "label": "Ví quà tặng",
+      "sublabel": "quà, thời điểm, lượt còn lại"
+    },
+    {
+      "id": "auth",
+      "lane": "gs",
+      "col": 0,
+      "type": "security",
+      "label": "Xác thực khách",
+      "sublabel": "tạo hoặc nhận diện hồ sơ"
+    },
+    {
+      "id": "convert",
+      "lane": "gs",
+      "col": 1,
+      "type": "backend",
+      "label": "Quy đổi lượt",
+      "sublabel": "còn lại = tổng lượt − đã chơi"
+    },
+    {
+      "id": "check",
+      "lane": "gs",
+      "col": 2,
+      "type": "backend",
+      "label": "Lượt còn lại > 0?",
+      "icon": "decision"
+    },
+    {
+      "id": "prize",
+      "lane": "gs",
+      "col": 3,
+      "type": "backend",
+      "label": "Quyết định quà",
+      "sublabel": "chỉ ở server, chống gian lận",
+      "yOffset": -50
+    },
+    {
+      "id": "record",
+      "lane": "gs",
+      "col": 3,
+      "type": "database",
+      "label": "Ghi lượt, trừ 1 lượt",
+      "sublabel": "mã lượt, SĐT, quà, thời điểm",
+      "yOffset": 50
+    },
+    {
+      "id": "push",
+      "lane": "gs",
+      "col": 4,
+      "type": "messagebus",
+      "label": "Đẩy dữ liệu",
+      "sublabel": "API/Webhook, ngay sau lượt"
+    },
+    {
+      "id": "logok",
+      "lane": "gs",
+      "col": 5,
+      "type": "database",
+      "label": "Ghi log thành công",
+      "icon": "success",
+      "yOffset": -150
+    },
+    {
+      "id": "syncok",
+      "lane": "gs",
+      "col": 5,
+      "type": "backend",
+      "label": "Đồng bộ thành công?",
+      "icon": "decision",
+      "yOffset": -50
+    },
+    {
+      "id": "retry",
+      "lane": "gs",
+      "col": 5,
+      "type": "messagebus",
+      "label": "Hàng đợi, tự gửi lại",
+      "sublabel": "chống trùng theo mã lượt",
+      "yOffset": 50
+    },
+    {
+      "id": "logerr",
+      "lane": "gs",
+      "col": 5,
+      "type": "security",
+      "label": "Log lỗi, cảnh báo admin",
+      "icon": "failure",
+      "yOffset": 150
+    },
+    {
+      "id": "spend",
+      "lane": "ipos",
+      "col": 1,
+      "type": "cloud",
+      "label": "Tổng chi tiêu",
+      "sublabel": "tra theo số điện thoại"
+    },
+    {
+      "id": "redeem",
+      "lane": "ipos",
+      "col": 4,
+      "type": "cloud",
+      "label": "Tra cứu, xác nhận đổi quà",
+      "sublabel": "nhân viên tại cửa hàng"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-open-phone",
+      "from": "open",
+      "to": "phone"
+    },
+    {
+      "id": "e-phone-auth",
+      "from": "phone",
+      "to": "auth",
+      "label": "SĐT + token"
+    },
+    {
+      "id": "e-auth-spend",
+      "from": "auth",
+      "to": "spend",
+      "label": "API chi tiêu"
+    },
+    {
+      "id": "e-spend-convert",
+      "from": "spend",
+      "to": "convert",
+      "label": "tổng chi tiêu"
+    },
+    {
+      "id": "e-convert-check",
+      "from": "convert",
+      "to": "check"
+    },
+    {
+      "id": "e-check-nomore",
+      "from": "check",
+      "to": "nomore",
+      "label": "Không",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-check-play",
+      "from": "check",
+      "to": "play",
+      "label": "Có",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-play-prize",
+      "from": "play",
+      "to": "prize"
+    },
+    {
+      "id": "e-prize-record",
+      "from": "prize",
+      "to": "record"
+    },
+    {
+      "id": "e-record-push",
+      "from": "record",
+      "to": "push"
+    },
+    {
+      "id": "e-push-wallet",
+      "from": "push",
+      "to": "wallet",
+      "label": "API/Webhook",
+      "variant": "dashed",
+      "role": "async"
+    },
+    {
+      "id": "e-push-redeem",
+      "from": "push",
+      "to": "redeem",
+      "label": "API/Webhook",
+      "variant": "dashed",
+      "role": "async"
+    },
+    {
+      "id": "e-wallet-view",
+      "from": "wallet",
+      "to": "view",
+      "role": "branch"
+    },
+    {
+      "id": "e-push-syncok",
+      "from": "push",
+      "to": "syncok",
+      "toSide": "left"
+    },
+    {
+      "id": "e-syncok-logok",
+      "from": "syncok",
+      "to": "logok",
+      "label": "Có"
+    },
+    {
+      "id": "e-syncok-retry",
+      "from": "syncok",
+      "to": "retry",
+      "label": "Không",
+      "variant": "security",
+      "role": "error",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "e-retry-syncok",
+      "from": "retry",
+      "to": "syncok",
+      "label": "gửi lại",
+      "variant": "dashed",
+      "role": "return",
+      "fromSide": "right",
+      "toSide": "right",
+      "route": "outside-right",
+      "labelSegment": 1
+    },
+    {
+      "id": "e-retry-logerr",
+      "from": "retry",
+      "to": "logerr",
+      "label": "vẫn lỗi",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Dữ liệu đồng bộ mỗi lượt",
+      "items": [
+        "Mã quà tặng và tên quà tặng",
+        "Thời điểm khách nhận quà",
+        "Số lượt chơi còn lại",
+        "Mã lượt chơi duy nhất, chống ghi trùng khi gửi lại"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Nguồn dữ liệu gốc",
+      "items": [
+        "Game Server: lượt chơi và quà tặng",
+        "iPOS: chi tiêu của khách",
+        "Số điện thoại: mã định danh chung cho cả 3 hệ thống"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Quy tắc quy đổi",
+      "items": [
+        "Mỗi X đồng chi tiêu = 1 lượt (X chờ chốt)",
+        "Lượt còn lại = Tổng lượt quy đổi − Số lượt đã chơi",
+        "Đồng bộ tự động, theo thời gian thực, không thao tác thủ công"
+      ]
+    }
+  ]
+}

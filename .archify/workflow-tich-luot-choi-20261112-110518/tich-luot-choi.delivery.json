@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "dc5b7e2d-68cc-4500-8539-7e74be008e66",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\candidate.json",
+  "output": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\tich-luot-choi.html",
+  "specification": {
+    "sha256": "b1a31b0e9b24f66a53969ec14015658a2f898417a6ac9b1a8ebfc956389bf70a",
+    "bytes": 8790
+  },
+  "artifact": {
+    "sha256": "cfdc2a5b27ad0a2ef65a2d1dcceaeda4fac67529509137d1aace016b364e44fd",
+    "bytes": 862691
+  }
+}

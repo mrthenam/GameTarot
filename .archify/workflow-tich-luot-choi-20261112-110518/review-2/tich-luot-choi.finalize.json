@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "fail",
+  "type": "workflow",
+  "quality": "showcase",
+  "startedAt": "2026-11-12T04:06:20.202Z",
+  "specification": {
+    "path": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\candidate.json",
+    "sha256": "dca0e9db5dcae2e53cbe2daba84259fe776dc41aff82cde1af2de82d9060f6f2",
+    "bytes": 8537
+  },
+  "artifact": {
+    "path": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\tich-luot-choi.html",
+    "sha256": "d6dde4834df16fc13c2554c351f0e90962a138beff86f267a878a03dd969a032",
+    "bytes": 862051
+  },
+  "stages": {
+    "validate": {
+      "status": "fail",
+      "exitCode": 1,
+      "durationMs": null,
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Users\\ADMIN\\.claude\\skills\\archify\\bin\\archify.mjs",
+        "deliver",
+        "workflow",
+        "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\candidate.json",
+        "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\tich-luot-choi.html",
+        "--quality",
+        "showcase",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": false,
+        "command": "deliver",
+        "receiptId": "05045e8b-a98d-4382-886c-8c958e167030",
+        "stage": "render",
+        "type": "workflow",
+        "input": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\candidate.json",
+        "output": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\tich-luot-choi.html",
+        "error": "Workflow edge \"e-retry-syncok\" cannot satisfy route preset \"outside-right\": candidate violates edge-label node clearance: its label intersects node \"syncok\".",
+        "diagnostics": [
+          {
+            "code": "workflow/route-preset-conflict",
+            "severity": "error",
+            "message": "Workflow edge \"e-retry-syncok\" cannot satisfy route preset \"outside-right\": candidate violates edge-label node clearance: its label intersects node \"syncok\".",
+            "subject": {
+              "diagramType": "workflow",
+              "edge": "e-retry-syncok",
+              "from": "retry",
+              "to": "syncok",
+              "route": "outside-right"
+            },
+            "evidence": {
+              "invariant": "edge-label node clearance",
+              "labelRect": {
+                "x": 995.2,
+                "y": 440,
+                "width": 43.6,
+                "height": 14
+              },
+              "obstacleNode": "syncok",
+              "attemptedCandidateFamily": "outside-right",
+              "points": [
+                [
+                  1004,
+                  560
+                ],
+                [
+                  1034,
+                  560
+                ],
+                [
+                  1034,
+                  460
+                ],
+                [
+                  1000,
+                  460
+                ]
+              ],
+              "fromSide": "right",
+              "toSide": "right",
+              "requiredEndpointStubPx": 8,
+              "requiredInteriorSegmentPx": 16,
+              "requiredDirectClearancePx": 28
+            },
+            "supportedFixes": [
+              "set labelSegment on edge \"e-retry-syncok\" to 1",
+              "remove route from edge \"e-retry-syncok\" so readable-v2 can use its verified automatic candidate"
+            ]
+          }
+        ],
+        "provenance": "failed",
+        "update": {
+          "status": "unavailable",
+          "installedVersion": null,
+          "availableVersion": null,
+          "releaseNotes": null,
+          "checkedAt": null,
+          "source": null,
+          "noticeRequired": false,
+          "noticeText": null,
+          "reason": "disabled"
+        }
+      },
+      "execution": "embedded-in-deliver"
+    },
+    "deliver": {
+      "status": "not-run",
+      "execution": "blocked-by-validate"
+    }
+  },
+  "browserCheck": {
+    "requested": true,
+    "ran": false
+  },
+  "diagnostics": [
+    {
+      "code": "workflow/route-preset-conflict",
+      "severity": "error",
+      "message": "Workflow edge \"e-retry-syncok\" cannot satisfy route preset \"outside-right\": candidate violates edge-label node clearance: its label intersects node \"syncok\".",
+      "subject": {
+        "diagramType": "workflow",
+        "edge": "e-retry-syncok",
+        "from": "retry",
+        "to": "syncok",
+        "route": "outside-right"
+      },
+      "evidence": {
+        "invariant": "edge-label node clearance",
+        "labelRect": {
+          "x": 995.2,
+          "y": 440,
+          "width": 43.6,
+          "height": 14
+        },
+        "obstacleNode": "syncok",
+        "attemptedCandidateFamily": "outside-right",
+        "points": [
+          [
+            1004,
+            560
+          ],
+          [
+            1034,
+            560
+          ],
+          [
+            1034,
+            460
+          ],
+          [
+            1000,
+            460
+          ]
+        ],
+        "fromSide": "right",
+        "toSide": "right",
+        "requiredEndpointStubPx": 8,
+        "requiredInteriorSegmentPx": 16,
+        "requiredDirectClearancePx": 28
+      },
+      "supportedFixes": [
+        "set labelSegment on edge \"e-retry-syncok\" to 1",
+        "remove route from edge \"e-retry-syncok\" so readable-v2 can use its verified automatic candidate"
+      ]
+    }
+  ],
+  "evidence": {
+    "receipt": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\review-2\\tich-luot-choi.finalize.json",
+    "summaryReceipt": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\review-2\\tich-luot-choi.finalize-summary.json"
+  },
+  "visualReview": "not-requested",
+  "failedStage": "validate",
+  "finishedAt": "2026-11-12T04:06:21.205Z",
+  "durationMs": 1002,
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-12T04:06:07.056Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  }
+}

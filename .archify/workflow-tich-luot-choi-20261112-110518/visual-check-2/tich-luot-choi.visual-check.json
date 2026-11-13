@@ -1,0 +1,1890 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "visual-check",
+  "evidenceKind": "automated-browser",
+  "status": "pass",
+  "visualReview": "pending",
+  "provenance": "current",
+  "deliveryReceiptId": "940f8379-1814-4a1f-931e-7a310be6a6db",
+  "artifact": {
+    "path": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\tich-luot-choi.html",
+    "sha256": "b62118a8ccde57552c542caf5ea06809307d9d4e146afc5428329acd8a3265e9",
+    "bytes": 862823
+  },
+  "state": {
+    "detail": "read",
+    "motion": "still"
+  },
+  "chrome": {
+    "status": "available",
+    "executable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+  },
+  "diagnostics": [],
+  "containment": {
+    "status": "pass",
+    "policy": "fit-or-reader-declared-readable-vertical-scroll",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "theme": "light",
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "scrollWidth": 1440,
+        "scrollHeight": 1320,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1376,
+        "diagramWidth": 1346,
+        "pageComposition": {
+          "bodyPaddingPx": 12,
+          "headerPx": 52,
+          "diagramChromePx": 78,
+          "svgPx": 1178,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 490,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 442,
+            "spaceAboveNodesPx": 43,
+            "spaceBelowNodesPx": 5
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 131,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 131,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 131,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1600,
+        "height": 1000,
+        "theme": "light",
+        "innerWidth": 1600,
+        "innerHeight": 1000,
+        "scrollWidth": 1600,
+        "scrollHeight": 1526,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1536,
+        "diagramWidth": 1506,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 1318,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 548,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 495,
+            "spaceAboveNodesPx": 48,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 146,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 73,
+            "spaceAboveNodesPx": 58,
+            "spaceBelowNodesPx": 15
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 146,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 73,
+            "spaceAboveNodesPx": 58,
+            "spaceBelowNodesPx": 15
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 146,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 73,
+            "spaceAboveNodesPx": 58,
+            "spaceBelowNodesPx": 15
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "theme": "light",
+        "innerWidth": 1920,
+        "innerHeight": 1080,
+        "scrollWidth": 1920,
+        "scrollHeight": 1615,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1856,
+        "diagramWidth": 1608,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 1407,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 585,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 528,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 156,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "theme": "light",
+        "innerWidth": 2048,
+        "innerHeight": 1320,
+        "scrollWidth": 2048,
+        "scrollHeight": 1633,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1920,
+        "diagramWidth": 1608,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 68,
+          "diagramChromePx": 94,
+          "svgPx": 1407,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 585,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 528,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 156,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 44,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      }
+    ]
+  },
+  "themeStates": {
+    "status": "pass",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "requestedTheme": "light",
+        "resolvedTheme": "light",
+        "ok": true
+      },
+      {
+        "width": 1600,
+        "height": 1000,
+        "requestedTheme": "light",
+        "resolvedTheme": "light",
+        "ok": true
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "requestedTheme": "light",
+        "resolvedTheme": "light",
+        "ok": true
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "requestedTheme": "light",
+        "resolvedTheme": "light",
+        "ok": true
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "requestedTheme": "dark",
+        "resolvedTheme": "dark",
+        "ok": true
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "requestedTheme": "dark",
+        "resolvedTheme": "dark",
+        "ok": true
+      }
+    ]
+  },
+  "readability": {
+    "status": "pass",
+    "minimumProjectedNodeTextPx": 6,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "theme": "light",
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "scrollWidth": 1440,
+        "scrollHeight": 1320,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1376,
+        "diagramWidth": 1346,
+        "pageComposition": {
+          "bodyPaddingPx": 12,
+          "headerPx": 52,
+          "diagramChromePx": 78,
+          "svgPx": 1178,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 490,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 442,
+            "spaceAboveNodesPx": 43,
+            "spaceBelowNodesPx": 5
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 131,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 131,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 131,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1600,
+        "height": 1000,
+        "theme": "light",
+        "innerWidth": 1600,
+        "innerHeight": 1000,
+        "scrollWidth": 1600,
+        "scrollHeight": 1526,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1536,
+        "diagramWidth": 1506,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 1318,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 548,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 495,
+            "spaceAboveNodesPx": 48,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 146,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 73,
+            "spaceAboveNodesPx": 58,
+            "spaceBelowNodesPx": 15
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 146,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 73,
+            "spaceAboveNodesPx": 58,
+            "spaceBelowNodesPx": 15
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 146,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 73,
+            "spaceAboveNodesPx": 58,
+            "spaceBelowNodesPx": 15
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "theme": "light",
+        "innerWidth": 1920,
+        "innerHeight": 1080,
+        "scrollWidth": 1920,
+        "scrollHeight": 1615,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1856,
+        "diagramWidth": 1608,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 1407,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 585,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 528,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 156,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "theme": "light",
+        "innerWidth": 2048,
+        "innerHeight": 1320,
+        "scrollWidth": 2048,
+        "scrollHeight": 1633,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1920,
+        "diagramWidth": 1608,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 68,
+          "diagramChromePx": 94,
+          "svgPx": 1407,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 585,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 528,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 156,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 44,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      }
+    ]
+  },
+  "viewerChrome": {
+    "status": "pass",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "theme": "light",
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "scrollWidth": 1440,
+        "scrollHeight": 1320,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1376,
+        "diagramWidth": 1346,
+        "pageComposition": {
+          "bodyPaddingPx": 12,
+          "headerPx": 52,
+          "diagramChromePx": 78,
+          "svgPx": 1178,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 490,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 442,
+            "spaceAboveNodesPx": 43,
+            "spaceBelowNodesPx": 5
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 131,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 131,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 131,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1600,
+        "height": 1000,
+        "theme": "light",
+        "innerWidth": 1600,
+        "innerHeight": 1000,
+        "scrollWidth": 1600,
+        "scrollHeight": 1526,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1536,
+        "diagramWidth": 1506,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 1318,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 548,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 495,
+            "spaceAboveNodesPx": 48,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 146,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 73,
+            "spaceAboveNodesPx": 58,
+            "spaceBelowNodesPx": 15
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 146,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 73,
+            "spaceAboveNodesPx": 58,
+            "spaceBelowNodesPx": 15
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 146,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 73,
+            "spaceAboveNodesPx": 58,
+            "spaceBelowNodesPx": 15
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "theme": "light",
+        "innerWidth": 1920,
+        "innerHeight": 1080,
+        "scrollWidth": 1920,
+        "scrollHeight": 1615,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1856,
+        "diagramWidth": 1608,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 1407,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 585,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 528,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 156,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "theme": "light",
+        "innerWidth": 2048,
+        "innerHeight": 1320,
+        "scrollWidth": 2048,
+        "scrollHeight": 1633,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1920,
+        "diagramWidth": 1608,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 68,
+          "diagramChromePx": 94,
+          "svgPx": 1407,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 585,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 528,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 156,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 44,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      }
+    ]
+  },
+  "captures": {
+    "status": "pass",
+    "screenshots": [
+      {
+        "width": 1440,
+        "height": 900,
+        "theme": "light",
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "scrollWidth": 1440,
+        "scrollHeight": 1320,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1376,
+        "diagramWidth": 1346,
+        "pageComposition": {
+          "bodyPaddingPx": 12,
+          "headerPx": 52,
+          "diagramChromePx": 78,
+          "svgPx": 1178,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 490,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 442,
+            "spaceAboveNodesPx": 43,
+            "spaceBelowNodesPx": 5
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 131,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 131,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 131,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light",
+        "file": "tich-luot-choi.visual-check.1440x900.light.png"
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "theme": "dark",
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "scrollWidth": 1440,
+        "scrollHeight": 1320,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1376,
+        "diagramWidth": 1346,
+        "pageComposition": {
+          "bodyPaddingPx": 12,
+          "headerPx": 52,
+          "diagramChromePx": 78,
+          "svgPx": 1178,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 490,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 442,
+            "spaceAboveNodesPx": 43,
+            "spaceBelowNodesPx": 5
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 131,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 131,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 131,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 65,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 14
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "dark",
+        "file": "tich-luot-choi.visual-check.1440x900.dark.png"
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "theme": "light",
+        "innerWidth": 2048,
+        "innerHeight": 1320,
+        "scrollWidth": 2048,
+        "scrollHeight": 1633,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1920,
+        "diagramWidth": 1608,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 68,
+          "diagramChromePx": 94,
+          "svgPx": 1407,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 585,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 528,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 156,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 44,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light",
+        "file": "tich-luot-choi.visual-check.2048x1320.light.png"
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "theme": "dark",
+        "innerWidth": 2048,
+        "innerHeight": 1320,
+        "scrollWidth": 2048,
+        "scrollHeight": 1633,
+        "overflowX": false,
+        "overflowY": true,
+        "verticalScrollAccepted": true,
+        "overflowDisposition": "readable-vertical-scroll",
+        "readerLayout": "adaptive",
+        "readerOverflow": "authored",
+        "readerFit": "width-first",
+        "ok": true,
+        "readerWidth": 1920,
+        "diagramWidth": 1608,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 68,
+          "diagramChromePx": 94,
+          "svgPx": 1407,
+          "cardsPx": 0,
+          "viewBoxHeight": 938
+        },
+        "viewBoxWidth": 1072,
+        "workflowLanes": [
+          {
+            "frameId": "lane-2",
+            "heightPx": 585,
+            "nodeCount": 10,
+            "nodeIds": [
+              "auth",
+              "convert",
+              "check",
+              "prize",
+              "record",
+              "push",
+              "logerr",
+              "logok",
+              "retry",
+              "syncok"
+            ],
+            "nodeSpanPx": 528,
+            "spaceAboveNodesPx": 51,
+            "spaceBelowNodesPx": 6
+          },
+          {
+            "frameId": "lane-0",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "open",
+              "play",
+              "view"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 156,
+            "nodeCount": 3,
+            "nodeIds": [
+              "phone",
+              "nomore",
+              "wallet"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          },
+          {
+            "frameId": "lane-3",
+            "heightPx": 156,
+            "nodeCount": 2,
+            "nodeIds": [
+              "spend",
+              "redeem"
+            ],
+            "nodeSpanPx": 78,
+            "spaceAboveNodesPx": 62,
+            "spaceBelowNodesPx": 17
+          }
+        ],
+        "minimumProjectedNodeTextPx": 7.2,
+        "minimumProjectedNonEdgeTextPx": 7.2,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "xin quyền tài khoản Zalo",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "phone"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 44,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "dark",
+        "file": "tich-luot-choi.visual-check.2048x1320.dark.png"
+      }
+    ],
+    "contactSheet": "tich-luot-choi.visual-check.html"
+  },
+  "sidecars": {
+    "directory": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\visual-check-2",
+    "receipt": "tich-luot-choi.visual-check.json",
+    "contactSheet": "tich-luot-choi.visual-check.html",
+    "files": [
+      {
+        "sha256": "6c6558a6538cc91008bc245ed6ef13a3110d5e6e352c9457b3369be272a0f079",
+        "bytes": 22012,
+        "file": "tich-luot-choi.visual-check.html"
+      },
+      {
+        "sha256": "b6846abb4b5e80d9a8fdd4d5704f06a6ab5bc7c709d15105dbffcba58c04147c",
+        "bytes": 149010,
+        "file": "tich-luot-choi.visual-check.1440x900.light.png"
+      },
+      {
+        "sha256": "29a3faf77afbf95e4f21a1061924198ba21c5246413c3e1f0903f711899f598d",
+        "bytes": 175026,
+        "file": "tich-luot-choi.visual-check.1440x900.dark.png"
+      },
+      {
+        "sha256": "9c4f81cf3aa1186f708881f0ee1233c3f31b1f742c0d71c75a75973ed29ff69d",
+        "bytes": 197415,
+        "file": "tich-luot-choi.visual-check.2048x1320.light.png"
+      },
+      {
+        "sha256": "7e85e773cc423ed2b8b795445e991456f003ea7bea0b433dcecdc10bd2b29bde",
+        "bytes": 227985,
+        "file": "tich-luot-choi.visual-check.2048x1320.dark.png"
+      }
+    ]
+  }
+}

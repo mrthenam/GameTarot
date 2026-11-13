@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "fail",
+  "type": "workflow",
+  "quality": "showcase",
+  "specification": {
+    "path": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\candidate.json",
+    "sha256": "dca0e9db5dcae2e53cbe2daba84259fe776dc41aff82cde1af2de82d9060f6f2",
+    "bytes": 8537
+  },
+  "artifact": {
+    "path": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\tich-luot-choi.html",
+    "sha256": "d6dde4834df16fc13c2554c351f0e90962a138beff86f267a878a03dd969a032",
+    "bytes": 862051
+  },
+  "gates": {
+    "validate": "fail",
+    "deliver": "not-run",
+    "check": "not-run",
+    "browser-check": "not-run"
+  },
+  "failedStage": "validate",
+  "diagnostics": [
+    {
+      "code": "workflow/route-preset-conflict",
+      "severity": "error",
+      "message": "Workflow edge \"e-retry-syncok\" cannot satisfy route preset \"outside-right\": candidate violates edge-label node clearance: its label intersects node \"syncok\".",
+      "subject": {
+        "diagramType": "workflow",
+        "edge": "e-retry-syncok",
+        "from": "retry",
+        "to": "syncok",
+        "route": "outside-right"
+      },
+      "evidence": {
+        "invariant": "edge-label node clearance",
+        "labelRect": {
+          "x": 995.2,
+          "y": 440,
+          "width": 43.6,
+          "height": 14
+        },
+        "obstacleNode": "syncok",
+        "attemptedCandidateFamily": "outside-right",
+        "points": [
+          [
+            1004,
+            560
+          ],
+          [
+            1034,
+            560
+          ],
+          [
+            1034,
+            460
+          ],
+          [
+            1000,
+            460
+          ]
+        ],
+        "fromSide": "right",
+        "toSide": "right",
+        "requiredEndpointStubPx": 8,
+        "requiredInteriorSegmentPx": 16,
+        "requiredDirectClearancePx": 28
+      },
+      "supportedFixes": [
+        "set labelSegment on edge \"e-retry-syncok\" to 1",
+        "remove route from edge \"e-retry-syncok\" so readable-v2 can use its verified automatic candidate"
+      ]
+    }
+  ],
+  "diagnosticSummary": {
+    "total": 1,
+    "shown": 1,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\review-2\\tich-luot-choi.finalize.json",
+    "summaryReceipt": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\review-2\\tich-luot-choi.finalize-summary.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-12T04:06:07.056Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 1002,
+  "browserCheck": {
+    "requested": true,
+    "ran": false
+  },
+  "nextAction": {
+    "action": "edit-in-place",
+    "candidate": "D:\\Claude\\Game Tarot\\.archify\\workflow-tich-luot-choi-20261112-110518\\candidate.json",
+    "constraint": "Preserve unaffected semantics and geometry; apply each diagnostic's supportedFixes, or the fix its message names, and do not replace the whole candidate.",
+    "then": "finalize-once"
+  }
+}
