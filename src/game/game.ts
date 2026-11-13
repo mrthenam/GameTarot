@@ -31,6 +31,7 @@ const LINES = {
   shuffle: ['Để ta xáo lại các vì sao...', 'Bộ bài đang thì thầm...'],
   noTurns: ['Năng lượng của bạn đã cạn... hãy quay lại khi trăng lên nhé.'],
   pity: ['Năng lượng vũ trụ đã đầy... lá này chắc chắn không tầm thường!'],
+  poke: ['Hihi... chọc ta làm gì, hãy chọn một lá bài đi!', 'Ta không phải lá bài đâu nhé~', 'Đôi mắt ta thấy cả định mệnh của bạn đấy...', 'Suỵt... các vì sao đang nghe lén đấy.'],
 };
 
 /** Colour (tier) shown after each of the three seals breaks. */
@@ -102,8 +103,34 @@ export class Game {
   private hoverAt(x: number, y: number) {
     if (this.phase !== 'idle') return;
     const c = this.cardAt(x, y);
+    this.setHover(c);
+    document.body.style.cursor = c || this.witchAt(x, y) ? 'pointer' : '';
+  }
+
+  /** Lift a card in the fan; the witch's eyes follow it. */
+  private setHover(c: CardMesh | null) {
+    if (c === this.deck.hovered) return;
+    const w = this.stage.witch;
+    if (c) {
+      w.lookAt(c.group);
+      if (!this.deck.hovered) w.setMood('curious', 1.4);
+    } else w.lookAt('player');
     this.deck.setHovered(c);
-    document.body.style.cursor = c ? 'pointer' : '';
+  }
+
+  private witchAt(x: number, y: number) {
+    this.pointer.set((x / window.innerWidth) * 2 - 1, -(y / window.innerHeight) * 2 + 1);
+    this.raycaster.setFromCamera(this.pointer, this.stage.camera);
+    return this.stage.witch.hit(this.raycaster);
+  }
+
+  /** Tapping the witch: she giggles, winks and teases. */
+  private poke() {
+    const w = this.stage.witch;
+    w.gesture('giggle');
+    w.setMood('sly', 2.4);
+    w.lookAt('player');
+    void this.say(pick(LINES.poke), 2);
   }
 
   private tapAt(x: number, y: number, type: string) {
@@ -113,9 +140,12 @@ export class Game {
     }
     if (this.phase !== 'idle') return;
     const c = this.cardAt(x, y);
-    if (!c) return;
+    if (!c) {
+      if (this.witchAt(x, y)) this.poke();
+      return;
+    }
     if (type !== 'mouse' && this.deck.hovered !== c) {
-      this.deck.setHovered(c); // first tap on touch lifts the card
+      this.setHover(c); // first tap on touch lifts the card
       return;
     }
     void this.pickCard(c);
@@ -161,7 +191,8 @@ export class Game {
       this.idleTimer += dt;
       if (this.idleTimer > 14 && this.state.turns > 0) {
         this.idleTimer = 0;
-        void this.ui.say(pick(LINES.idle), 2.6);
+        void this.say(pick(LINES.idle), 2.6);
+        this.stage.witch.gesture('tilt');
       }
       if (this.state.turns <= 0) {
         this.ui.hint(`Hết lượt hôm nay · lượt mới sau <b>${fmtCountdown(this.state.msUntilReset())}</b>`);
@@ -189,13 +220,19 @@ export class Game {
     s.door.visible = false;
     this.ui.showHud();
     this.ui.setTurns(this.state.turns);
-    this.stage.witch.castTarget = 1;
-    void this.ui.say(LINES.welcome[0], 3.4);
-    await clock.wait(0.5);
-    const hands = this.stage.witch.handsWorld();
+    const w = this.stage.witch;
+    w.lookAt('player');
+    w.setMood('warm');
+    w.gesture('bow');
+    void this.say(LINES.welcome[0], 3.4);
+    await clock.wait(1.4);
+    w.castTarget = 1;
+    w.setMood('focus');
+    w.lookAt('down');
+    const hands = w.handsWorld();
     this.stage.particles.emit(hands, { color: '#c9a8ff', count: 120, speed: [0.3, 1.2], size: [0.015, 0.04], spread: 0.1, life: [0.6, 1.4] });
     await this.deck.shuffle(hands);
-    this.stage.witch.castTarget = 0;
+    w.castTarget = 0;
     this.enterIdle();
   }
 
@@ -204,14 +241,21 @@ export class Game {
     this.idleTimer = 0;
     this.ui.refreshCounters();
     this.ui.setTurns(this.state.turns);
+    const w = this.stage.witch;
+    w.idle = true;
+    w.tension = 0;
+    w.lookAt('player');
     if (this.state.turns > 0) {
+      w.setMood('warm');
       this.deck.interactive = true;
       this.deck.dimOthers(null, 0);
       this.ui.hint(this.state.pityReady ? '✦ Năng lượng đầy — lá tiếp theo chắc chắn <b>Hiếm</b> trở lên ✦' : 'Hãy chọn một lá bài');
     } else {
       this.deck.interactive = false;
       this.deck.dimOthers(null, 0.6);
-      void this.ui.say(LINES.noTurns[0], 4);
+      w.setMood('sad');
+      w.gesture('shake', 0.7);
+      void this.say(LINES.noTurns[0], 4);
     }
   }
 
@@ -230,7 +274,8 @@ export class Game {
   async pickCard(card: CardMesh) {
     if (this.phase !== 'idle') return;
     if (this.state.turns <= 0) {
-      void this.ui.say(LINES.noTurns[0], 3);
+      this.stage.witch.gesture('shake', 0.6);
+      void this.say(LINES.noTurns[0], 3);
       return;
     }
     const result = this.state.draw();
@@ -239,6 +284,7 @@ export class Game {
     document.body.style.cursor = '';
     this.deck.interactive = false;
     this.deck.setHovered(null);
+    this.stage.witch.idle = false;
     this.ui.hint(null);
     // Don't spoil a bonus turn before the reveal.
     this.ui.setTurns(this.state.turns - result.prize.extraTurns);
@@ -258,7 +304,10 @@ export class Game {
     this.audio.pick();
     this.audio.duck(0.6);
     s.witch.castTarget = 1;
-    void this.ui.say(r.pityTriggered ? LINES.pity[0] : pick(LINES.pick), 2.4);
+    s.witch.lookAt(card.group);
+    s.witch.setMood(r.pityTriggered ? 'sly' : 'curious');
+    s.witch.gesture('leanIn');
+    void this.say(r.pityTriggered ? LINES.pity[0] : pick(LINES.pick), 2.4);
     void clock.tween(1.2, (k) => (s.roomDim = k * 0.6), ease.inOutSine);
     const pose = this.revealPose();
     const p0 = card.group.position.clone();
@@ -305,7 +354,9 @@ export class Game {
     this.phase = 'seals';
     this.heartbeatRate = 1;
     this.heartbeatT = 0;
-    void this.ui.say(LINES.seals[0], 2.4);
+    s.witch.setMood('tense');
+    s.witch.tension = 0.25;
+    void this.say(LINES.seals[0], 2.4);
 
     // 3 ─ player breaks them one by one
     let shown = -1;
@@ -318,6 +369,7 @@ export class Game {
       // last seal on a big upgrade: the colour wavers before locking in
       if (k === 2 && upgrade && T >= 2) {
         this.phase = 'busy';
+        s.witch.tension = 0.8;
         this.audio.riser(0.9);
         await clock.tween(0.9, (q, raw) => {
           const f = Math.floor(raw * 14) % 2 === 0;
@@ -339,7 +391,15 @@ export class Game {
       card.glowColor.copy(TIER_COLORS[L]);
       card.glowBase = 0.8 + k * 0.5 + (upgrade ? 0.4 : 0);
       this.heartbeatRate = 1.3 + k * 0.5;
-      if (upgrade) void this.ui.say(LINES.upgrade[L], 1.8);
+      // she pushes with the player, flinches at the crack, gasps at a colour jump
+      s.witch.gesture('thrust', 0.7);
+      s.witch.gesture('flinch', 0.5 + k * 0.2);
+      s.witch.tension = 0.3 + k * 0.2;
+      if (upgrade) {
+        s.witch.setMood('surprised', 1.2);
+        s.witch.gesture('recoil', 0.4 + L * 0.2);
+        void this.say(LINES.upgrade[L], 1.8);
+      }
       if (k < 2) {
         this.phase = 'busy';
         await clock.wait(0.35);
@@ -362,6 +422,7 @@ export class Game {
       magicLevel = 0.95 + a * 0.8;
       setMagic();
       this.heartbeatRate = 2.5 + a * 2.5;
+      s.witch.tension = 0.6 + a * 0.4;
       if (Math.random() < 0.7) {
         const ang = Math.random() * Math.PI * 2;
         const from = this.tmp.set(Math.cos(ang) * 0.5, Math.sin(ang) * 0.5, 0).applyQuaternion(pose.quat).add(pose.pos);
@@ -372,6 +433,7 @@ export class Game {
     card.inner.position.set(0, 0, 0);
     card.inner.rotation.z = 0;
     this.heartbeatRate = 0;
+    this.witchReveal(T);
 
     // 5 ─ FLIP
     this.audio.flip(T);
@@ -396,17 +458,19 @@ export class Game {
       card.group.scale.setScalar(pose.scale * (1 + Math.sin(k * Math.PI) * 0.12));
       card.glowBase = lerp(5, 0.45 + T * 0.2, k);
     }, ease.inOutCubic);
-    void this.ui.say(pick(LINES.reveal[T]), 3);
+    void this.say(pick(LINES.reveal[T]), 3);
     this.audio.duck(0.35, 1.5);
     void clock.tween(1.2, (k) => (s.roomDim = lerp(0.9, 0.62, k)), ease.inOutSine);
     s.witch.castTarget = 0.4;
 
     // 6 ─ the gift rises from behind the card
     await clock.wait(0.45);
+    s.witch.gesture('present');
     await this.showGift(card, r, pose.scale);
 
     // 7 ─ reading + gift panel
     this.phase = 'result';
+    s.witch.lookAt('player');
     const turnsAfter = this.state.turns;
     if (r.prize.extraTurns > 0) {
       void clock.wait(1.2).then(() => {
@@ -419,6 +483,31 @@ export class Game {
     await this.ui.showResult(r, turnsAfter);
     await this.clearReveal(card);
     this.enterIdleAfterShuffle();
+  }
+
+  /** Speech bubble + her mouth moving while the text types out. */
+  private say(text: string, hold?: number) {
+    this.stage.witch.talk(Math.min(2.2, [...text].length * 0.03) + 0.15);
+    return this.ui.say(text, hold);
+  }
+
+  /** Her reaction to the flipped card, by rarity tier. */
+  private witchReveal(T: number) {
+    const w = this.stage.witch;
+    w.tension = 0;
+    w.setMood('warm');
+    if (T === 0) {
+      w.gesture('nod');
+    } else if (T === 1) {
+      w.setMood('delighted', 2.4);
+      w.gesture('nod');
+    } else {
+      w.setMood('delighted');
+      w.setMood(T === 3 ? 'awed' : 'surprised', T === 3 ? 1.5 : 0.8);
+      w.gesture('recoil', T === 3 ? 1 : 0.7);
+      void clock.wait(T === 3 ? 1.5 : 0.8).then(() => w.gesture('laugh', T === 3 ? 1 : 0.7));
+      void clock.wait(4).then(() => w.setMood('warm'));
+    }
   }
 
   private forward() {
@@ -521,8 +610,12 @@ export class Game {
 
   private async enterIdleAfterShuffle() {
     this.phase = 'busy';
+    const w = this.stage.witch;
+    w.tension = 0;
+    w.lookAt('down');
     if (this.state.turns > 0) {
-      void this.ui.say(pick(LINES.shuffle), 2);
+      w.setMood('focus');
+      void this.say(pick(LINES.shuffle), 2);
       this.stage.witch.castTarget = 1;
       await this.deck.shuffle(this.stage.witch.handsWorld());
       this.stage.witch.castTarget = 0;
@@ -531,6 +624,16 @@ export class Game {
       await this.deck.shuffle(this.stage.witch.handsWorld());
     }
     this.enterIdle();
+  }
+
+  /** For capture/automation: lift fan card i (null: none). */
+  hoverIndex(i: number | null) {
+    this.setHover(i === null ? null : this.deck.cards[i] ?? null);
+  }
+
+  /** For capture/automation: tap the witch. */
+  pokeWitch() {
+    if (this.phase === 'idle') this.poke();
   }
 
   /** For capture/automation: pick fan card i. */

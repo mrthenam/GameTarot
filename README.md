@@ -36,7 +36,19 @@ Sửa file này không cần build lại, chỉ cần tải lại trang.
 
 - Cảnh mở đầu: cánh cửa khắc rune có đuốc hai bên, bấm "Bước vào phòng" thì cửa mở và camera lướt vào phòng.
 - Căn phòng 3D: tranh nền (cửa sổ trăng tròn), bàn khăn nhung, nến lập lòe có ánh sáng, quả cầu pha lê, bụi ma thuật, bloom.
-- Phù thủy: ảnh vẽ có thở và đung đưa; khi làm phép thì mắt và tay phát sáng. Bong bóng thoại tiếng Việt theo từng tình huống.
+- Phù thủy: một ảnh vẽ được dựng như con rối 2D (`src/scene/witch.ts`), không cần thêm ảnh nào.
+  - **Chuyển động:** đầu nghiêng, gật, quay, kèm thở, đung đưa và tóc lay theo. Hai tay nâng lên, xòe ra, ngón tay múa khi làm phép, run khi hồi hộp.
+  - **Khuôn mặt:** chớp mắt (đôi khi chớp hai lần), nháy mắt, mắt liếc, nhướn hoặc nhíu mày, cười, buồn, há miệng ngạc nhiên. Miệng mấp máy khi bong bóng thoại hiện chữ.
+  - **Theo diễn biến game:**
+    - cúi chào khi khách bước vào;
+    - nhắm mắt tập trung khi xáo bài;
+    - mắt dõi theo lá bài đang được rê chuột tới hoặc đang bay;
+    - nghiêng người theo dõi khi phá phong ấn, giật mình ở mỗi tầng vỡ, há miệng khi màu được nâng cấp;
+    - khi lật bài: gật đầu với quà thường, ngỡ ngàng rồi bật cười với quà hiếm hoặc huyền thoại, xòe tay đón món quà;
+    - buồn và lắc đầu khi hết lượt.
+  - **Lúc chờ:** tự liếc bộ bài hoặc quả cầu, nghiêng đầu, mỉm cười, thở dài, thỉnh thoảng nháy mắt.
+  - **Chạm vào phù thủy:** cô ấy khúc khích, nháy mắt và trêu khách.
+  - Khi làm phép, mắt và tay phát sáng. Bong bóng thoại tiếng Việt thay đổi theo từng tình huống.
 - Quạt 11 lá bài bay lơ lửng: nâng lên khi rê chuột (trên điện thoại chạm lần 1 để nâng, lần 2 để chọn). Hoạt ảnh xáo và chia bài từ tay phù thủy.
 - Chuỗi mở bài hồi hộp:
   1. Lá bài bay tới trước mặt người chơi, vòng tròn ma thuật hiện ra, nhịp tim dồn dập.
@@ -53,6 +65,11 @@ Sửa file này không cần build lại, chỉ cần tải lại trang.
 - Giọng nói và nhạc do AI tạo chưa làm được, vì khóa `GOOGLE_API_KEY` hiện tại không có quyền dùng Lyria (nhạc) hay Gemini TTS (giọng). Hiện tại âm thanh được tổng hợp bằng code và lời phù thủy hiện bằng chữ.
 - Backend để kiểm tra mã quà và giới hạn số lượng quà thật (xem lưu ý ở trên).
 - Có thể thêm: chia sẻ lá bài lên mạng xã hội để nhận thêm lượt, phần thưởng khi hoàn thành bộ 22 lá.
+- **Tạm hoãn, chờ lệnh (13/11/2026): sửa theo [chính sách kiểm duyệt Zalo Mini App](https://miniapp.zaloplatforms.com/documents/zalo-mini-app-censorship-policy/?lang=vi).** Zalo không cho mở web bên ngoài qua webview, nên game phải được đóng vào chính gói Mini App (giới hạn 10 MB mỗi gói, 3 MB mỗi file; bản build hiện tại khoảng 7 MB). Việc cần làm khi bắt đầu:
+  - Sơ đồ swimlane (`.archify/workflow-tich-luot-choi-20261112-110518/`): ở Bước 1, chỉ xin số điện thoại khi khách bấm chơi hoặc xem lượt, không xin ngay lúc mở; khách từ chối vẫn xem được thể lệ và danh sách quà.
+  - Bộ slide quy trình mới: thêm slide "Đưa game vào Mini App", sửa Bước 1, thêm các lưu ý về chữ "trả thưởng" (chỉ dùng quà voucher), Checkout SDK nếu màn hết lượt hiện giá, và ghi ngày bắt đầu, kết thúc chương trình.
+  - Bộ slide cũ: bỏ phương án dự phòng "Web riêng (openWebview)".
+  - Game: bỏ bộ font `.woff` trùng (0,49 MB), tải ảnh mặt bài sau khi căn phòng đã hiện (Zalo coi tải quá 10 giây là vi phạm), chạy thử trên điện thoại thật trong Zalo.
 
 ## Quay video kiểm tra
 
@@ -61,7 +78,11 @@ Khi `npm run dev` đang chạy:
 ```bash
 node scripts/capture.mjs shots              # ảnh các khoảnh khắc chính → screenshots/shots
 node scripts/capture.mjs video --rarity legendary   # video ~19 s → screenshots/proof.mp4
+node scripts/capture.mjs witch --w 1600 --h 900     # video phù thủy diễn, có khung phóng to mặt → screenshots/witch.mp4
+node scripts/witchlab.mjs face                      # chụp từng biểu cảm (face|body) → screenshots/witchlab
 ```
+
+Trang `witchlab.html` (chỉ dùng khi phát triển) hiện riêng phù thủy ở cự ly gần để chỉnh khung rối. Trong console, `window.__ov = { uLid: [1, 1, 0, 0] }` ép một biểu cảm cụ thể.
 
 Script dùng Chrome thật có GPU, bước thời gian cố định 1/30 s (`?capture=1`).
 

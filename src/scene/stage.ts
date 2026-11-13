@@ -365,7 +365,7 @@ export class Stage {
     }
     this.flicker = fl / 2;
     this.witch.dim = this.roomDim;
-    this.witch.update(dt, time, this.flicker);
+    this.witch.update(dt, time, this.flicker, this.camera);
     const bd = 1 - this.roomDim * 0.62;
     this.backdrop.material.color.setScalar(bd * (0.97 + this.flicker * 0.02));
     for (const m of this.tableMats) m.color.setScalar(1 - this.roomDim * 0.5);

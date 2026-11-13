@@ -54,7 +54,7 @@ const shot = async (name) => {
   return f;
 };
 /** Advance `sec` seconds; in video mode grab every frame, otherwise just step. */
-const run = async (sec, every = mode === 'video') => {
+const run = async (sec, every = mode === 'video' || mode === 'witch') => {
   const n = Math.round(sec * 30);
   for (let i = 0; i < n; i++) {
     await step(1);
@@ -66,7 +66,7 @@ const waitPhase = async (p, maxSec = 20) => {
   for (let i = 0; i < maxSec * 30; i++) {
     if ((await phase()) === p) return;
     await step(1);
-    if (mode === 'video') await shot();
+    if (mode === 'video' || mode === 'witch') await shot();
   }
   throw new Error(`timeout waiting for phase ${p}, at ${await phase()}`);
 };
@@ -80,7 +80,7 @@ if (mode === 'shots') {
   await waitPhase('idle');
   await run(0.4);
   await shot('03_idle.png');
-  await page.evaluate(() => window.__game.deck.setHovered(window.__game.deck.cards[6]));
+  await page.evaluate(() => window.__game.hoverIndex(6));
   await run(0.5);
   await shot('04_hover.png');
   await page.evaluate(() => window.__game.pickIndex(6));
@@ -108,14 +108,40 @@ if (mode === 'shots') {
   await waitPhase('idle');
   await run(0.3);
   await shot('12_idle2.png');
+} else if (mode === 'witch') {
+  // ~20 s of the witch acting: welcome, shuffle, idle life, eyes on the cards, a poke, a reveal
+  await run(0.4);
+  await page.click('[data-el=enter]');
+  await waitPhase('idle');
+  await run(2.6);
+  await page.evaluate(() => window.__game.hoverIndex(2));
+  await run(0.9);
+  await page.evaluate(() => window.__game.hoverIndex(8));
+  await run(0.9);
+  await page.evaluate(() => window.__game.hoverIndex(null));
+  await run(0.3);
+  await page.evaluate(() => window.__game.pokeWitch());
+  await run(2.0);
+  await page.evaluate(() => window.__game.pickIndex(5));
+  await waitPhase('seals');
+  await run(0.5);
+  for (let k = 0; k < 3; k++) {
+    await page.evaluate(() => window.__game.tap());
+    if (k < 2) {
+      await waitPhase('seals');
+      await run(0.45);
+    }
+  }
+  await waitPhase('result');
+  await run(1.5);
 } else {
   // ~18 s proof video: intro → enter → deal → pick → seals → flip → gift → result
   await run(0.6);
   await page.click('[data-el=enter]');
   await waitPhase('idle');
-  await page.evaluate(() => window.__game.deck.setHovered(window.__game.deck.cards[3]));
+  await page.evaluate(() => window.__game.hoverIndex(3));
   await run(0.4);
-  await page.evaluate(() => window.__game.deck.setHovered(window.__game.deck.cards[6]));
+  await page.evaluate(() => window.__game.hoverIndex(6));
   await run(0.5);
   await page.evaluate(() => window.__game.pickIndex(6));
   await waitPhase('seals');
@@ -135,6 +161,15 @@ console.log(`frames: ${frame} → ${outDir}`);
 if (errors.length) console.log('console errors/warnings:\n' + errors.slice(0, 20).join('\n'));
 await browser.close();
 
+if (mode === 'witch') {
+  // full frame with a close-up of the witch inset at the bottom right
+  const mp4 = path.resolve('screenshots', 'witch.mp4');
+  const cx = Math.round(W * 0.39), cy = Math.round(H * 0.05), cw = Math.round(W * 0.22);
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', '30', '-i', path.join(outDir, 'frame_%04d.png'),
+    '-filter_complex', `[0:v]split[a][b];[b]crop=${cw}:${cw}:${cx}:${cy},scale=400:400,pad=406:406:3:3:color=0xE9C26A[z];[a]scale=1280:720[m];[m][z]overlay=W-w-16:H-h-16`,
+    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '20', mp4], { stdio: 'inherit' });
+  console.log('video:', mp4);
+}
 if (mode === 'video') {
   const mp4 = path.resolve('screenshots', 'proof.mp4');
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', '30', '-i', path.join(outDir, 'frame_%04d.png'),
