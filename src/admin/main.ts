@@ -132,7 +132,7 @@ function renderLogin(err = '') {
         <label class="f"><span>Mật khẩu</span><input type="password" name="pw" autocomplete="current-password" required autofocus></label>
         ${err ? `<div class="err">${esc(err)}</div>` : ''}
         <button class="btn primary" type="submit">Đăng nhập</button>
-        <p class="hint">Lần chạy đầu, máy chủ tạo sẵn mật khẩu và lưu ở <code>server/data/admin-password.txt</code>.</p>
+        <p class="hint">Nếu chưa đặt biến <code>ADMIN_PASSWORD</code>, máy chủ tự tạo mật khẩu ở lần chạy đầu, in ra log máy chủ và lưu ở <code>admin-password.txt</code> trong thư mục dữ liệu.</p>
       </form>
     </div></div>`;
   $('#login')!.addEventListener('submit', async (e) => {
