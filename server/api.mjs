@@ -255,6 +255,70 @@ export function createApi(opts = {}) {
     };
   }
 
+  /** Dashboard numbers: daily series for the last `days` days plus totals and wins per prize. */
+  function adminStats(days) {
+    const now = Date.now();
+    const today = dayOf(now);
+    const yesterday = dayOf(now - DAY_MS);
+    const list = [];
+    for (let i = days - 1; i >= 0; i--) list.push(dayOf(now - i * DAY_MS));
+    const from = list[0];
+    const byDay = new Map(list.map((d) => [d, { day: d, draws: 0, codes: 0, redeemed: 0 }]));
+    for (const r of db.prepare(`SELECT day, COUNT(*) AS draws, COUNT(code) AS codes FROM draws
+      WHERE test = 0 AND day >= ? GROUP BY day`).all(from)) {
+      const d = byDay.get(r.day);
+      if (d) Object.assign(d, { draws: r.draws, codes: r.codes });
+    }
+    const since = new Date(`${from}T00:00:00`).getTime();
+    for (const r of db.prepare('SELECT redeemed_at FROM draws WHERE test = 0 AND redeemed_at >= ?').all(since)) {
+      const d = byDay.get(dayOf(r.redeemed_at));
+      if (d) d.redeemed++;
+    }
+    const one = (sql, ...a) => db.prepare(sql).get(...a).n;
+    const byPrize = db.prepare(`SELECT prize_id AS id, prize_name AS name, rarity, COUNT(*) AS count FROM draws
+      WHERE test = 0 AND day >= ? GROUP BY prize_id ORDER BY count DESC`).all(from);
+    return {
+      days: [...byDay.values()],
+      byPrize,
+      totals: {
+        draws: one('SELECT COUNT(*) AS n FROM draws WHERE test = 0'),
+        drawsToday: one('SELECT COUNT(*) AS n FROM draws WHERE test = 0 AND day = ?', today),
+        drawsYesterday: one('SELECT COUNT(*) AS n FROM draws WHERE test = 0 AND day = ?', yesterday),
+        drawsYesterdaySoFar: one('SELECT COUNT(*) AS n FROM draws WHERE test = 0 AND day = ? AND at <= ?', yesterday, now - DAY_MS),
+        codes: one('SELECT COUNT(*) AS n FROM draws WHERE test = 0 AND code IS NOT NULL'),
+        codesToday: one('SELECT COUNT(*) AS n FROM draws WHERE test = 0 AND code IS NOT NULL AND day = ?', today),
+        redeemed: one('SELECT COUNT(*) AS n FROM draws WHERE test = 0 AND redeemed_at IS NOT NULL'),
+        active: one('SELECT COUNT(*) AS n FROM draws WHERE test = 0 AND code IS NOT NULL AND redeemed_at IS NULL AND (expires IS NULL OR expires >= ?)', now),
+        expired: one('SELECT COUNT(*) AS n FROM draws WHERE test = 0 AND code IS NOT NULL AND redeemed_at IS NULL AND expires < ?', now),
+        players: one('SELECT COUNT(*) AS n FROM players'),
+        playersToday: one('SELECT COUNT(DISTINCT player) AS n FROM draws WHERE test = 0 AND day = ?', today),
+      },
+    };
+  }
+
+  /** Codes list with a status filter, search and paging. */
+  function listDraws(q, status, limit, offset) {
+    const where = ['code IS NOT NULL'];
+    const args = [];
+    const now = Date.now();
+    if (q) {
+      where.push('code LIKE ?');
+      args.push(`%${q}%`);
+    } else where.push('test = 0');
+    if (status === 'active') {
+      where.push('redeemed_at IS NULL AND (expires IS NULL OR expires >= ?)');
+      args.push(now);
+    } else if (status === 'redeemed') where.push('redeemed_at IS NOT NULL');
+    else if (status === 'expired') {
+      where.push('redeemed_at IS NULL AND expires < ?');
+      args.push(now);
+    }
+    const w = where.join(' AND ');
+    const total = db.prepare(`SELECT COUNT(*) AS n FROM draws WHERE ${w}`).get(...args).n;
+    const rows = db.prepare(`SELECT * FROM draws WHERE ${w} ORDER BY at DESC, id DESC LIMIT ? OFFSET ?`).all(...args, limit, offset);
+    return { draws: rows.map(drawRow), total };
+  }
+
   const intOrNull = (v, min) => {
     if (v === null || v === undefined || v === '') return null;
     const n = Number(v);
@@ -396,11 +460,15 @@ export function createApi(opts = {}) {
           return send(res, 200, adminState());
         }
         if (m === 'GET' && p === '/api/admin/draws') {
-          const q = (url.searchParams.get('q') ?? '').trim().toUpperCase();
-          const rows = q
-            ? db.prepare('SELECT * FROM draws WHERE code LIKE ? ORDER BY id DESC LIMIT 50').all(`%${q}%`)
-            : db.prepare('SELECT * FROM draws WHERE test = 0 ORDER BY id DESC LIMIT 100').all();
-          return send(res, 200, { draws: rows.map(drawRow) });
+          const q = (url.searchParams.get('q') ?? '').trim().toUpperCase().replace(/[%_]/g, '');
+          const status = url.searchParams.get('status') ?? 'all';
+          const limit = Math.min(100, Math.max(1, Number(url.searchParams.get('limit')) || 20));
+          const offset = Math.max(0, Number(url.searchParams.get('offset')) || 0);
+          return send(res, 200, listDraws(q, status, limit, offset));
+        }
+        if (m === 'GET' && p === '/api/admin/stats') {
+          const days = Math.min(60, Math.max(7, Number(url.searchParams.get('days')) || 14));
+          return send(res, 200, adminStats(days));
         }
         if (m === 'POST' && p === '/api/admin/redeem') {
           const code = String((await body(req)).code ?? '').trim().toUpperCase();

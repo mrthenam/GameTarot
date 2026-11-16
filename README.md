@@ -23,10 +23,13 @@ Mở `/admin.html`.
 - **Mật khẩu:** lần chạy đầu tiên, máy chủ tự tạo mật khẩu, in ra console và lưu ở `server/data/admin-password.txt`. Đổi được trong tab *Cài đặt*. Nếu đặt biến `ADMIN_PASSWORD` thì dùng mật khẩu đó.
 - **Dữ liệu:** nằm trong `server/data/tarot.db` (SQLite, không đưa vào git). Lần đầu chạy, máy chủ chép quà và cài đặt từ `public/config.json`; từ đó trang admin là nơi duy nhất sửa quà.
 
-| Tab | Làm được gì |
+Trang admin có thanh menu bên trái, thanh tìm nhanh mã quà ở trên, chế độ sáng/tối, và dùng được trên điện thoại.
+
+| Trang | Làm được gì |
 |---|---|
-| Quà & tỉ lệ | Thêm, sửa, xóa, tạm ngừng từng món quà: tên, mô tả, biểu tượng, độ hiếm, **tỉ lệ trúng (%)**, **tổng số giải**, **số giải tối đa mỗi ngày**, có phát mã hay không, cộng thêm lượt. Xem số đã trúng, số còn lại, số hôm nay và số lần trúng dự kiến trên 1.000 lượt. Có nút đặt lại "Đã trúng" khi bắt đầu đợt khuyến mại mới. |
-| Mã quà | Tra mã khách đưa, xem món quà, hạn dùng và trạng thái; bấm *Xác nhận đổi quà* để đánh dấu đã dùng. Mã đã đổi hoặc đã hết hạn sẽ bị từ chối. |
+| Tổng quan | Số lượt bốc hôm nay (so với cùng giờ hôm qua), mã quà phát ra, tỉ lệ đổi quà, số người chơi. Biểu đồ lượt bốc 14 ngày (xem được dạng bảng), quà đã trúng theo món, kho quà còn lại kèm cảnh báo *Sắp hết* và *Hết quà*, mã quà mới nhất. Tự làm mới mỗi 30 giây. |
+| Quà & tỉ lệ | Bảng quà với tỉ lệ trúng, số còn lại, số hôm nay, công tắc bật/tắt. Bấm sửa hoặc *Thêm món quà* để mở khung bên phải: tên, mô tả, biểu tượng, độ hiếm, **tỉ lệ trúng (%)**, **tổng số giải**, **tối đa mỗi ngày**, cộng thêm lượt, phát mã, quà dự phòng. Có nút đặt lại "Đã trúng" khi bắt đầu đợt khuyến mại mới. |
+| Mã quà | Lọc *Tất cả / Chưa đổi / Đã đổi / Hết hạn*, tìm theo mã, phân trang. Bấm *Xác nhận đổi* khi giao quà; mã đã đổi hoặc hết hạn sẽ bị từ chối. |
 | Cài đặt | Tên cửa hàng, tên game, lượt bốc mỗi ngày, bảo đảm quà Hiếm sau N lượt, hạn dùng mã, tiền tố mã, lời dặn; đổi mật khẩu. |
 
 **Cách máy chủ bốc quà:**
