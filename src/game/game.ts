@@ -9,31 +9,14 @@ import { CARD_H, CARD_W, type CardMesh } from '../scene/cards';
 import { createMagicCircle, createRays } from '../scene/fx';
 import { iconUrl, fmtCountdown, type UI } from '../ui/ui';
 import type { AudioEngine } from '../audio/audio';
+import type { Voice } from '../audio/voice';
 import { dotTexture } from '../scene/textures';
+import { LINES } from '../data/lines';
 
 type Phase = 'intro' | 'entering' | 'busy' | 'idle' | 'seals' | 'result';
 
 const TIER_COLORS = ['#8fd8ff', '#b98cff', '#ff6fb5', '#ffcf5a'].map((c) => new THREE.Color(c));
 const SEAL_NEUTRAL = new THREE.Color('#e9e2ff');
-
-const LINES = {
-  welcome: ['Chào mừng lữ khách đến với căn phòng của ta... Hãy chọn một lá bài, định mệnh sẽ lên tiếng.'],
-  idle: ['Lá bài nào đang gọi tên bạn?', 'Đừng ngần ngại... hãy nghe theo trực giác.', 'Ta cảm nhận được điều đặc biệt hôm nay...', 'Các vì sao đang chờ bạn lựa chọn.'],
-  pick: ['Lá bài này đã chọn bạn...', 'Một lựa chọn thú vị...', 'Ồ... trực giác của bạn thật nhạy bén.'],
-  seals: ['Hãy phá bỏ ba tầng phong ấn!'],
-  upgrade: ['', 'Ồ...? Năng lượng đang thay đổi!', 'Không thể nào... ánh sáng này!', 'CÁC VÌ SAO ĐANG RUNG CHUYỂN!'],
-  reveal: [
-    ['Vũ trụ gửi lời nhắn đến bạn.', 'Hãy lắng nghe thông điệp này.'],
-    ['Một điềm lành hiếm có!', 'Định mệnh đang mỉm cười với bạn.'],
-    ['Thật phi thường! Định mệnh ưu ái bạn!'],
-    ['Huyền thoại! Ta chưa từng thấy lá bài nào sáng đến thế!'],
-  ],
-  shuffle: ['Để ta xáo lại các vì sao...', 'Bộ bài đang thì thầm...'],
-  noTurns: ['Năng lượng của bạn đã cạn... hãy quay lại khi trăng lên nhé.'],
-  pity: ['Năng lượng vũ trụ đã đầy... lá này chắc chắn không tầm thường!'],
-  offline: ['Các vì sao đang bị mây che... bạn thử lại sau giây lát nhé.'],
-  poke: ['Hihi... chọc ta làm gì, hãy chọn một lá bài đi!', 'Ta không phải lá bài đâu nhé~', 'Đôi mắt ta thấy cả định mệnh của bạn đấy...', 'Suỵt... các vì sao đang nghe lén đấy.'],
-};
 
 /** Colour (tier) shown after each of the three seals breaks. */
 function sealPlan(T: number): number[] {
@@ -47,6 +30,7 @@ export class Game {
   private deck: Deck;
   private ui: UI;
   private audio: AudioEngine;
+  private voice: Voice;
   private state: GameState;
   private cfg: GameConfig;
   private raycaster = new THREE.Raycaster();
@@ -63,11 +47,12 @@ export class Game {
   private iconTextures = new Map<string, THREE.Texture>();
   private tmp = new THREE.Vector3();
 
-  constructor(stage: Stage, deck: Deck, ui: UI, audio: AudioEngine, state: GameState, cfg: GameConfig) {
+  constructor(stage: Stage, deck: Deck, ui: UI, audio: AudioEngine, voice: Voice, state: GameState, cfg: GameConfig) {
     this.stage = stage;
     this.deck = deck;
     this.ui = ui;
     this.audio = audio;
+    this.voice = voice;
     this.state = state;
     this.cfg = cfg;
     stage.fxRoot.add(this.magic, this.rays);
@@ -165,6 +150,7 @@ export class Game {
 
   // ------------------------------------------------------------ per frame
   private frame(dt: number, t: number) {
+    this.voice.update();
     // Witch speech bubble follows her head on screen.
     const head = this.stage.witch.headWorld(this.tmp).project(this.stage.camera);
     this.ui.placeBubble((head.x * 0.5 + 0.5) * window.innerWidth, (-head.y * 0.5 + 0.5) * window.innerHeight);
@@ -190,7 +176,7 @@ export class Game {
 
     if (this.phase === 'idle') {
       this.idleTimer += dt;
-      if (this.idleTimer > 14 && this.state.turns > 0) {
+      if (this.idleTimer > 14 && this.state.turns > 0 && !this.voice.speaking) {
         this.idleTimer = 0;
         void this.say(pick(LINES.idle), 2.6);
         this.stage.witch.gesture('tilt');
@@ -207,6 +193,8 @@ export class Game {
     if (this.phase !== 'intro') return;
     this.phase = 'entering';
     this.audio.init();
+    // decode her short lines while the door opens (card readings load when a card is drawn)
+    this.voice.preload(...Object.values(LINES).flat(2));
     this.audio.startMusic();
     this.audio.door();
     void this.ui.hideIntro();
@@ -299,6 +287,7 @@ export class Game {
     this.deck.setHovered(null);
     this.stage.witch.idle = false;
     this.ui.hint(null);
+    this.voice.preload(result.card.message); // her reading, ready by the time the card turns
     // Don't spoil a bonus turn before the reveal.
     this.ui.setTurns(this.state.turns - result.prize.extraTurns);
     await this.reveal(card, result);
@@ -493,13 +482,28 @@ export class Game {
     }
     this.ui.refreshCounters();
     this.ui.hush();
-    await this.ui.showResult(r, turnsAfter);
+    // she reads the card aloud right after her exclamation, and the text types along with her
+    const reading = this.voice.play(r.card.message, true);
+    if (reading) s.witch.talk(reading.delay + reading.dur, () => this.voice.level);
+    await this.ui.showResult(r, turnsAfter, reading);
+    this.voice.stop();
+    s.witch.hush();
     await this.clearReveal(card);
     this.enterIdleAfterShuffle();
   }
 
-  /** Speech bubble + her mouth moving while the text types out. */
+  /**
+   * Speech bubble + her voice, her mouth following it. Lines without a recording (e.g. a server
+   * error message) type out silently with a made-up mouth rhythm.
+   */
   private say(text: string, hold?: number) {
+    // let her finish a line that is nearly done instead of cutting its last word
+    const v = this.voice.play(text, this.voice.remaining() < 0.9);
+    if (v) {
+      this.stage.witch.talk(v.delay + v.dur, () => this.voice.level);
+      const bubble = () => this.ui.say(text, Math.max(hold ?? 3.2, 1.2), v.dur * 0.9);
+      return v.delay > 0.05 ? clock.wait(v.delay).then(bubble) : bubble();
+    }
     this.stage.witch.talk(Math.min(2.2, [...text].length * 0.03) + 0.15);
     return this.ui.say(text, hold);
   }

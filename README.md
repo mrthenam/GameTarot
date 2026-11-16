@@ -17,6 +17,17 @@ npm start          # chạy bản phát hành kèm máy chủ quà: http://local
 
 Tham số thử nghiệm, chỉ có tác dụng khi chạy `npm run dev` (bản build sẽ bỏ qua): `?turns=99` để đặt số lượt, `?reset` để xóa dữ liệu đã lưu.
 
+### Sửa lời phù thủy
+
+Lời đọc lá bài nằm trong `src/data/tarot.ts` (trường `message`), các câu thoại nằm trong `src/data/lines.ts`. Sau khi sửa, chạy:
+
+```bash
+npm run voice      # chỉ thu lại những câu mới hoặc đã đổi chữ (cần GOOGLE_API_KEY và ffmpeg)
+python scripts/voice_check.py --all   # cho Whisper nghe lại để soát lời đọc
+```
+
+Câu nào đã đổi chữ mà chưa thu lại thì game vẫn hiện chữ, miệng vẫn mấp máy, nhưng không phát giọng cũ (sai lời). Đổi giọng: `TTS_VOICE=Aoede python scripts/voice_gen.py --force --best 3` (thu lại tất cả, mỗi câu giữ bản Whisper nghe rõ nhất).
+
 ## Quà, số giải và tỉ lệ trúng: trang admin
 
 Mở `/admin.html`.
@@ -97,7 +108,7 @@ Các trường cài đặt giống tab *Cài đặt*. Mỗi món trong `prizes[]
   - **Ánh sáng:** ánh nến ấm đổ theo hướng bề mặt (chập chờn theo ngọn nến), mép dáng người có viền ánh trăng, và có bóng mờ phía sau tách cô ấy khỏi tranh nền.
   - **Đầu:** quay và gật thật quanh cổ, nên mũi dịch nhiều hơn mũ trùm.
   - **Chuyển động:** đầu nghiêng, gật, quay, kèm thở, đung đưa và tóc lay theo. Hai tay nâng lên, xòe ra, ngón tay múa khi làm phép, run khi hồi hộp.
-  - **Khuôn mặt:** chớp mắt (đôi khi chớp hai lần), nháy mắt, mắt liếc, nhướn hoặc nhíu mày, cười, buồn, há miệng ngạc nhiên. Miệng mấp máy khi bong bóng thoại hiện chữ.
+  - **Khuôn mặt:** chớp mắt (đôi khi chớp hai lần), nháy mắt, mắt liếc, nhướn hoặc nhíu mày, cười, buồn, há miệng ngạc nhiên. Miệng mở theo giọng nói (xem phần Giọng phù thủy bên dưới).
   - **Theo diễn biến game:**
     - cúi chào khi khách bước vào;
     - nhắm mắt tập trung khi xáo bài;
@@ -108,13 +119,21 @@ Các trường cài đặt giống tab *Cài đặt*. Mỗi món trong `prizes[]
   - **Lúc chờ:** tự liếc bộ bài hoặc quả cầu, nghiêng đầu, mỉm cười, thở dài, thỉnh thoảng nháy mắt.
   - **Chạm vào phù thủy:** cô ấy khúc khích, nháy mắt và trêu khách.
   - Khi làm phép, mắt và tay phát sáng. Bong bóng thoại tiếng Việt thay đổi theo từng tình huống.
+- Giọng phù thủy (lồng tiếng sẵn bằng Gemini TTS, giọng **Erinome**: cô gái trẻ giọng Bắc, trong, bí ẩn, nói nhanh):
+  - 22 lời đọc lá bài, mỗi lá khoảng 60–70 chữ đọc trong 17–22 giây (khoảng 3,5 chữ/giây), và 27 câu thoại theo tình huống: chào khách, chờ, chọn bài, phá phong ấn, nâng cấp, lật bài, xáo bài, hết lượt, bị chọc.
+  - Miệng mở theo âm lượng thật của câu đang đọc. Khi đọc dài, cô ấy thỉnh thoảng gật, nghiêng đầu, rướn người.
+  - Nhạc nền nhỏ lại khi cô ấy nói. Chữ trong bong bóng thoại chạy cùng giọng.
+  - Trên bảng kết quả, lời đọc nằm trong khung 4 dòng (3 dòng trên điện thoại) tự cuộn theo giọng như phụ đề, nên món quà và mã quà luôn hiện. Bấm "Bốc tiếp" là dừng đọc.
+  - File giọng tải khi cần: các câu ngắn tải lúc cửa mở, lời đọc lá bài tải ngay khi biết lá bốc được.
+  - Chọn giọng: thử 8 giọng nữ trẻ trên hai model, rồi 5 giọng tốt nhất với ba câu khác nhau, cho Whisper nghe lại để chấm độ rõ tiếng Việt và đo cao độ, tốc độ. Erinome có giọng cao nhất (trẻ nhất), nói nhanh nhất và đọc lời dài rõ nhất (99–100%). Các bản thử nằm trong `asset_src/voice/` (`aud2_*`, `aud4_*`).
+  - Mỗi câu được thu tối đa 3 bản, giữ bản Whisper nghe đúng nhất.
 - Quạt 11 lá bài bay lơ lửng: nâng lên khi rê chuột (trên điện thoại chạm lần 1 để nâng, lần 2 để chọn). Hoạt ảnh xáo và chia bài từ tay phù thủy.
 - Chuỗi mở bài hồi hộp:
   1. Lá bài bay tới trước mặt người chơi, vòng tròn ma thuật hiện ra, nhịp tim dồn dập.
   2. **3 tầng phong ấn** phải chạm để phá. Mỗi tầng vỡ lộ dần màu độ hiếm và có thể "nâng cấp" (Xanh → Tím → Hồng → Vàng), tầng cuối có màu chập chờn trước khi chốt.
   3. Lá bài rung mạnh, rồi lật kèm chớp sáng, tia sáng và pháo hạt.
   4. Món quà trồi lên từ sau lá bài.
-- Bảng kết quả: độ hiếm, tên lá bài (Việt/Anh), từ khóa, thông điệp gõ dần, món quà, mã voucher (chạm để sao chép), hạn dùng.
+- Bảng kết quả: độ hiếm, tên lá bài (Việt/Anh), từ khóa, lời đọc của phù thủy (chữ chạy theo giọng), món quà, mã voucher (chạm để sao chép), hạn dùng.
 - Vòng lặp giữ chân người chơi: lượt theo ngày với đồng hồ đếm ngược, quà "+1 lượt", thanh *Năng lượng vũ trụ* (bảo đảm quà Hiếm), *Bộ sưu tập* 22 lá (ưu tiên ra lá chưa có), *Túi quà*.
 - Âm thanh tự tổng hợp bằng WebAudio: nhạc nền huyền bí (Rê thứ, harp/pad/celesta), tiếng vỡ phong ấn, nhịp tim, riser, lật bài, quà. Có nút tắt tiếng.
 - Bố cục dọc cho điện thoại (bảng kết quả dạng sheet dưới, nút "Bốc tiếp" luôn hiện) và bố cục ngang cho máy tính.
@@ -127,7 +146,7 @@ Các trường cài đặt giống tab *Cài đặt*. Mỗi món trong `prizes[]
 
 ## Còn lại / gợi ý
 
-- Giọng nói và nhạc do AI tạo chưa làm được, vì khóa `GOOGLE_API_KEY` hiện tại không có quyền dùng Lyria (nhạc) hay Gemini TTS (giọng). Hiện tại âm thanh được tổng hợp bằng code và lời phù thủy hiện bằng chữ.
+- Nhạc nền và hiệu ứng vẫn tổng hợp bằng code. Khóa `GOOGLE_API_KEY` nay có liệt kê model nhạc Lyria nhưng chưa thử.
 - Phù thủy 3D thật: ảnh tham chiếu và prompt đã có, đang chờ mô hình GLB tạo trên web Tripo. Bản 2.5D hiện tại sẽ là phương án dự phòng.
 - Đếm lượt chơi trên máy chủ theo từng khách. Cần khách đăng nhập (số điện thoại Zalo) mới chống được việc xóa dữ liệu để có lượt mới.
 - Có thể thêm: chia sẻ lá bài lên mạng xã hội để nhận thêm lượt, phần thưởng khi hoàn thành bộ 22 lá.
@@ -136,6 +155,7 @@ Các trường cài đặt giống tab *Cài đặt*. Mỗi món trong `prizes[]
   - Bộ slide quy trình mới: thêm slide "Đưa game vào Mini App", sửa Bước 1, thêm các lưu ý về chữ "trả thưởng" (chỉ dùng quà voucher), Checkout SDK nếu màn hết lượt hiện giá, và ghi ngày bắt đầu, kết thúc chương trình.
   - Bộ slide cũ: bỏ phương án dự phòng "Web riêng (openWebview)".
   - Game: bỏ bộ font `.woff` trùng (0,49 MB), tải ảnh mặt bài sau khi căn phòng đã hiện (Zalo coi tải quá 10 giây là vi phạm), chạy thử trên điện thoại thật trong Zalo.
+  - Giọng đọc (`public/voice`, 3,1 MB) làm gói vượt 10 MB: tải file giọng từ máy chủ game thay vì đóng vào gói, hoặc giảm bitrate.
 
 ## Quay video kiểm tra
 
@@ -145,6 +165,7 @@ Khi `npm run dev` đang chạy:
 node scripts/capture.mjs shots              # ảnh các khoảnh khắc chính → screenshots/shots
 node scripts/capture.mjs video --rarity legendary   # video ~19 s → screenshots/proof.mp4
 node scripts/capture.mjs witch --w 1600 --h 900     # video phù thủy diễn, có khung phóng to mặt → screenshots/witch.mp4
+node scripts/capture.mjs voice --card 19            # video có tiếng: lời chào, chọc, phong ấn, đọc lá → screenshots/voice.mp4
 node scripts/witchlab.mjs face                      # chụp từng biểu cảm (face|body) → screenshots/witchlab
 ```
 
@@ -169,6 +190,7 @@ Script dùng Chrome thật có GPU, bước thời gian cố định 1/30 s (`?c
 | Chiều sâu phù thủy | Bản đồ độ sâu (trắng = gần): phồng theo dáng người, mặt hình bầu dục, hai bàn tay nhô ra | 510×650, đọc trong shader | `src/assets/img/witch_depth.png` (từ `scripts/witch_depth.py`) | 0 |
 | Phù thủy tư thế chữ T | Ảnh tham chiếu toàn thân để tạo mô hình 3D trên Tripo | — (chưa dùng trong game) | `asset_src/witch3d/witch_tpose_clean.png` | 10¢ |
 | Âm thanh | Nhạc nền và hiệu ứng tổng hợp bằng WebAudio | vòng lặp 8 ô nhịp, 72 BPM | `src/audio/audio.ts` | 0 |
+| Giọng phù thủy (49 câu) | Gemini TTS `gemini-2.5-flash-preview-tts`, giọng Erinome (cô gái trẻ giọng Bắc, nói nhanh): 22 lời đọc lá bài và 27 câu thoại. Lời lấy từ `src/data/tarot.ts` và `src/data/lines.ts` | MP3 mono 24 kHz, 48 kbps, tổng 8,4 phút, 3,1 MB; tải khi cần | `public/voice/*.mp3` và `manifest.json` (từ `npm run voice`); các bản thử giọng trong `asset_src/voice/` | ≈ 0,35 $ (ước tính), cộng ≈ 0,46 $ cho bản giọng Vindemiatrix thu trước đó |
 | Texture thủ tục | Phong ấn, vòng ma thuật, tia sáng, khăn nhung, tường đá | — | `src/scene/textures.ts` | 0 |
 
-**Tổng chi phí tạo tài nguyên: 2,28 $.**
+**Tổng chi phí tạo tài nguyên: ≈ 3,09 $.**

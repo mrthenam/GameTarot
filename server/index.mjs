@@ -36,8 +36,10 @@ createServer((req, res) => {
     return void res.end('Not found');
   }
   res.setHeader('Content-Type', TYPES[path.extname(file).toLowerCase()] ?? 'application/octet-stream');
-  // hashed assets never change; pages and config always revalidate
-  res.setHeader('Cache-Control', rel.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache');
+  // hashed assets never change; voice clips are fetched with ?v=<length> (a new take gets a new URL);
+  // pages, config and the voice manifest always revalidate
+  const voiceClip = rel.startsWith('/voice/') && rel.endsWith('.mp3');
+  res.setHeader('Cache-Control', rel.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : voiceClip ? 'public, max-age=2592000' : 'no-cache');
   createReadStream(file).pipe(res);
 }).listen(PORT, () => {
   console.log(`Tarot Ánh Trăng: http://localhost:${PORT}  ·  admin: http://localhost:${PORT}/admin.html`);

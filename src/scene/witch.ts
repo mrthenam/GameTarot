@@ -407,6 +407,9 @@ export class Witch {
   private talkUntil = 0;
   private syl = 0;
   private sylAmp = 0.6;
+  private talkLevel: (() => number) | null = null;
+  private lev = 0;
+  private talkGestureAt = 0;
   private breathPhase = 0;
   private sacc = new THREE.Vector2();
   private nextSacc = 1;
@@ -534,10 +537,22 @@ export class Witch {
     this.glanceUntil = this.time + sec;
   }
 
-  /** Move the mouth for `sec` seconds (the bubble's typing time). */
-  talk(sec: number) {
+  /**
+   * Move the mouth for `sec` seconds. With `level` (her recorded voice's loudness, 0..1) the jaw
+   * follows the actual speech; without it, a made-up syllable rhythm (the bubble's typing time).
+   */
+  talk(sec: number, level?: () => number) {
     this.talkUntil = this.time + sec;
+    this.talkLevel = level ?? null;
+    this.lev = 0;
+    this.talkGestureAt = this.time + 2.2 + Math.random() * 1.5;
     if (Math.random() < 0.5) this.gesture('nod', 0.35);
+  }
+
+  /** Stop talking now (the line was cut off). */
+  hush() {
+    this.talkUntil = 0;
+    this.talkLevel = null;
   }
 
   blink() {
@@ -689,7 +704,19 @@ export class Witch {
 
     // talking
     let talkJaw = 0;
-    if (time < this.talkUntil) {
+    if (time < this.talkUntil && this.talkLevel) {
+      const l = this.talkLevel();
+      // the jaw snaps open on a syllable and eases shut
+      this.lev += (l - this.lev) * Math.min(1, dt * (l > this.lev ? 32 : 13));
+      talkJaw = this.lev * 0.6;
+      off.pitch += 0.05 * this.lev;
+      // a long reading: she nods, tilts and leans in now and then, as people do while explaining
+      if (time > this.talkGestureAt) {
+        const g: GestureName[] = ['nod', 'tilt', 'leanIn', 'nod'];
+        this.gesture(g[Math.floor(Math.random() * g.length)], 0.35 + Math.random() * 0.3);
+        this.talkGestureAt = time + 3.2 + Math.random() * 3.5;
+      }
+    } else if (time < this.talkUntil) {
       this.syl += dt * (5.2 + Math.sin(time * 1.7) * 1.2);
       if (this.syl >= 1) {
         this.syl -= 1;

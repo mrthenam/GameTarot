@@ -139,7 +139,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .r-new { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 600; color: #7fffd1; background: rgba(60, 255, 190, .1); border: 1px solid rgba(127,255,209,.4); padding: 3px 10px; border-radius: 999px; }
 .r-keys { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; }
 .r-keys span { font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--gold); }
-.r-msg { font-family: var(--serif); font-size: 21px; line-height: 1.38; font-style: italic; text-align: center; margin: 12px 0 10px; min-height: 3.6em; color: #fbf3e2; }
+.r-msg {
+  font-family: var(--serif); font-size: 19px; line-height: 1.42; font-style: italic; text-align: left; text-wrap: pretty;
+  margin: 10px 0 10px; color: #fbf3e2;
+  /* a 4-line window that follows the typing; earlier lines fade out at the top */
+  height: calc(4 * 1.42em); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none;
+}
+.r-msg::-webkit-scrollbar { display: none; }
+.r-msg.scrolled { mask-image: linear-gradient(180deg, transparent 0, #000 1.1em); }
 .r-div { display: flex; align-items: center; gap: 10px; color: var(--ink-dim); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; margin: 6px 0 10px; }
 .r-div::before, .r-div::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 .gift { display: flex; align-items: center; gap: 14px; padding: 10px 12px; border-radius: 16px; background: color-mix(in srgb, var(--tier) 10%, rgba(255,255,255,.03)); border: 1px solid color-mix(in srgb, var(--tier) 40%, transparent); }
@@ -194,7 +201,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .detail { display: grid; grid-template-columns: minmax(160px, 260px) 1fr; gap: 22px; align-items: center; }
 .detail img { width: 100%; border-radius: 12px; box-shadow: 0 0 30px rgba(232,196,111,.3); }
 .detail .r-keys { justify-content: flex-start; }
-.detail .r-msg { text-align: left; }
+.detail .r-msg { text-align: left; height: auto; overflow: visible; }
 
 .toast {
   position: absolute; left: 50%; top: 80px; transform: translate(-50%, -10px); padding: 10px 18px; border-radius: 999px;
@@ -210,7 +217,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   }
   .r-actions { margin: 12px -18px -16px; padding: 10px 18px 14px; bottom: -16px; }
   .r-name { font-size: 28px; }
-  .r-msg { font-size: 18px; min-height: 0; margin: 8px 0; }
+  .r-msg { font-size: 17px; height: calc(3 * 1.42em); margin: 8px 0; }
   .gift img { width: 56px; height: 56px; }
   .v-code { font-size: 20px; }
   .detail { grid-template-columns: 1fr; }

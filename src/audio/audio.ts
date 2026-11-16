@@ -18,6 +18,9 @@ export class AudioEngine {
   private master!: GainNode;
   private musicBus!: GainNode;
   private musicFilter!: BiquadFilterNode;
+  private musicUnderVoice!: GainNode;
+  /** The witch's recorded voice goes here (see Voice); it rides the master so mute applies. */
+  voiceBus!: GainNode;
   private sfxBus!: GainNode;
   private reverb!: ConvolverNode;
   private reverbSend!: GainNode;
@@ -55,7 +58,15 @@ export class AudioEngine {
     this.musicFilter.frequency.value = 9000;
     this.musicBus = ctx.createGain();
     this.musicBus.gain.value = 0.55;
-    this.musicBus.connect(this.musicFilter).connect(this.master);
+    this.musicUnderVoice = ctx.createGain();
+    this.musicBus.connect(this.musicFilter).connect(this.musicUnderVoice).connect(this.master);
+    this.voiceBus = ctx.createGain();
+    this.voiceBus.gain.value = 1.15;
+    this.voiceBus.connect(this.master);
+    // a touch of the room on her voice
+    const voiceRoom = ctx.createGain();
+    voiceRoom.gain.value = 0.12;
+    this.voiceBus.connect(voiceRoom).connect(this.reverbSend);
     this.sfxBus = ctx.createGain();
     this.sfxBus.gain.value = 0.9;
     this.sfxBus.connect(this.master);
@@ -197,6 +208,12 @@ export class AudioEngine {
     const t = this.ctx.currentTime;
     this.musicBus.gain.setTargetAtTime(0.55 * (1 - amount * 0.75), t, time / 3);
     this.musicFilter.frequency.setTargetAtTime(9000 * (1 - amount) + 500 * amount, t, time / 3);
+  }
+
+  /** Music steps back while the witch speaks. */
+  voiceDuck(on: boolean) {
+    if (!this.ctx) return;
+    this.musicUnderVoice.gain.setTargetAtTime(on ? 0.4 : 1, this.ctx.currentTime, on ? 0.08 : 0.5);
   }
 
   // ------------------------------------------------------------ sfx

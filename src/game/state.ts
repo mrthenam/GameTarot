@@ -73,6 +73,8 @@ export class GameState {
   data: SaveData;
   /** Dev/capture only: force the next draws' rarity. */
   forceRarity: Prize['rarity'] | null = null;
+  /** Dev/capture only: force the next draws' card (0..21). */
+  forceCard: number | null = null;
   private cfg: GameConfig;
   private listeners = new Set<() => void>();
 
@@ -218,7 +220,8 @@ export class GameState {
     const tier = RARITY[prize.rarity].tier;
     // Choose the card: uncollected cards are favoured; big wins favour "lucky" cards.
     const col = this.data.collection;
-    const card = weighted(TAROT, (c) => {
+    const forced = import.meta.env.DEV && this.forceCard !== null ? TAROT[this.forceCard] : undefined;
+    const card = forced ?? weighted(TAROT, (c) => {
       let w = col[c.id] ? 1 : 2.5;
       if (tier >= 2 && LUCKY_CARDS.includes(c.id)) w *= 4;
       return w;

@@ -13,6 +13,8 @@ import { Stage } from './scene/stage';
 import { Deck } from './scene/deck';
 import { initCardAssets, frontTexture } from './scene/cards';
 import { AudioEngine } from './audio/audio';
+import { Voice } from './audio/voice';
+import { LINES } from './data/lines';
 import { UI } from './ui/ui';
 import { Game } from './game/game';
 
@@ -21,6 +23,8 @@ declare global {
     __ready?: boolean;
     __step?: (n?: number) => Promise<void>;
     __game?: Game;
+    __voice?: Voice;
+    __time?: () => number;
     __gl?: string;
   }
 }
@@ -41,9 +45,11 @@ async function boot() {
 
   const stage = new Stage(canvas, capture);
   const audio = new AudioEngine();
+  const voice = new Voice(audio, capture);
+  void voice.load().then(() => voice.preload(LINES.welcome[0]));
   const deck = new Deck(stage, audio);
   const ui = new UI(document.getElementById('ui')!, cfg, state, audio);
-  const game = new Game(stage, deck, ui, audio, state, cfg);
+  const game = new Game(stage, deck, ui, audio, voice, state, cfg);
   game.bindInput(canvas);
   ui.setIntroTurns(state.turns);
   ui.onEnter(() => void game.enter());
@@ -67,6 +73,7 @@ async function boot() {
   };
 
   if (capture) {
+    window.__time = () => clock.time;
     // Fixed 1/30 s steps driven by the capture script.
     window.__step = async (n = 1) => {
       for (let i = 0; i < n; i++) {
@@ -84,6 +91,7 @@ async function boot() {
     });
   }
   window.__game = game;
+  window.__voice = voice;
 
   // Warm the card faces in the background so reveals never wait.
   window.setTimeout(() => {

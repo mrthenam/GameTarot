@@ -138,13 +138,14 @@ export class UI {
 
   // ------------------------------------------------------------ witch bubble
   /** Typewriter speech bubble near the witch; driven by the game clock. */
-  async say(text: string, hold = 3.2) {
+  /** Type `text` into her speech bubble (over `typeSec`, e.g. the length of the recorded line), then keep it up `hold` s. */
+  async say(text: string, hold = 3.2, typeSec?: number) {
     const token = ++this.bubbleToken;
     const b = this.el.bubble, t = this.el.bubbleText;
     b.classList.add('on');
     t.textContent = '';
     const chars = [...text];
-    await clock.tween(Math.min(2.2, chars.length * 0.03), (_, raw) => {
+    await clock.tween(typeSec ?? Math.min(2.2, chars.length * 0.03), (_, raw) => {
       if (token !== this.bubbleToken) return;
       t.textContent = chars.slice(0, Math.ceil(raw * chars.length)).join('');
     }, ease.linear);
@@ -197,7 +198,11 @@ export class UI {
 
   // ------------------------------------------------------------ result
   /** Shows the reading + gift. Resolves when the player chooses to draw again / close. */
-  showResult(r: DrawResult, turnsLeft: number): Promise<void> {
+  /**
+   * The reading and the gift. `speech` is when her recorded reading starts and how long it runs
+   * (s from now): the message then types out along with her voice.
+   */
+  showResult(r: DrawResult, turnsLeft: number, speech?: { delay: number; dur: number } | null): Promise<void> {
     const rar = RARITY[r.prize.rarity];
     const card = r.card;
     const p = this.el.result;
@@ -246,13 +251,29 @@ export class UI {
       p.style.opacity = String(k);
       p.style.transform = portrait ? `translateY(${(1 - k) * 60}px)` : `translateX(${(1 - k) * 60}px)`;
     }, ease.outCubic);
+    // The reading types out with her voice in a few-line window that scrolls like subtitles,
+    // so the gift and the code below it stay in view. Scrolling it by hand stops the follow.
     const chars = [...card.message];
-    void clock.tween(Math.min(3, chars.length * 0.022), (_, raw) => {
+    let typing = true;
+    let follow = true;
+    let lastH = 0;
+    const stopFollow = () => (follow = false);
+    msgEl.addEventListener('wheel', stopFollow, { passive: true });
+    msgEl.addEventListener('touchstart', stopFollow, { passive: true });
+    msgEl.addEventListener('scroll', () => msgEl.classList.toggle('scrolled', msgEl.scrollTop > 2), { passive: true });
+    const typeSec = speech ? speech.dur * 0.94 : Math.min(3, chars.length * 0.022);
+    void clock.tween(typeSec, (_, raw) => {
+      if (!typing) return;
       msgEl.textContent = chars.slice(0, Math.ceil(raw * chars.length)).join('');
-    }, ease.linear, 0.35);
+      if (follow && msgEl.scrollHeight !== lastH) {
+        lastH = msgEl.scrollHeight;
+        msgEl.scrollTo({ top: lastH, behavior: 'smooth' });
+      }
+    }, ease.linear, speech ? speech.delay : 0.35);
     return new Promise((resolve) => {
       p.querySelector<HTMLElement>('[data-next]')!.addEventListener('click', () => {
         this.audio.click();
+        typing = false;
         msgEl.textContent = card.message;
         resolve();
       }, { once: true });

@@ -1,7 +1,9 @@
 // Deterministic capture of the running dev server (npm run dev must be up).
 //   node scripts/capture.mjs shots  [--w 1280 --h 720] [--rarity legendary]
 //   node scripts/capture.mjs video  [--w 1280 --h 720] [--rarity legendary]
-// Frames land in screenshots/<mode>/; video mode also encodes screenshots/proof.mp4.
+//   node scripts/capture.mjs voice  [--w 1280 --h 720] [--rarity legendary] [--card 19]
+// Frames land in screenshots/<mode>/; video mode also encodes screenshots/proof.mp4, voice mode
+// screenshots/voice.mp4 with the witch's recorded lines laid under the picture where she said them.
 import { chromium } from 'playwright-core';
 import { mkdirSync, rmSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -16,6 +18,7 @@ const opt = (k, d) => {
 const W = Number(opt('w', 1280));
 const H = Number(opt('h', 720));
 const rarity = opt('rarity', 'legendary');
+const forceCard = opt('card', null);
 const url = opt('url', 'http://localhost:5173/');
 const outDir = path.resolve('screenshots', opt('out', mode));
 
@@ -44,8 +47,11 @@ const gl = await page.evaluate(() => window.__gl);
 console.log('renderer:', gl);
 if (/swiftshader|llvmpipe|lavapipe/i.test(gl)) console.warn('WARNING: software renderer');
 await page.evaluate((r) => { window.__game.state.forceRarity = r; }, rarity);
+if (forceCard !== null) await page.evaluate((c) => { window.__game.state.forceCard = c; }, Number(forceCard));
 
 let frame = 0;
+let t0 = 0;
+let voiceLog = [];
 const step = (n = 1) => page.evaluate((k) => window.__step(k), n);
 const shot = async (name) => {
   const f = path.join(outDir, name ?? `frame_${String(frame).padStart(4, '0')}.png`);
@@ -54,7 +60,8 @@ const shot = async (name) => {
   return f;
 };
 /** Advance `sec` seconds; in video mode grab every frame, otherwise just step. */
-const run = async (sec, every = mode === 'video' || mode === 'witch') => {
+const recording = mode === 'video' || mode === 'witch' || mode === 'voice';
+const run = async (sec, every = recording) => {
   const n = Math.round(sec * 30);
   for (let i = 0; i < n; i++) {
     await step(1);
@@ -66,7 +73,7 @@ const waitPhase = async (p, maxSec = 20) => {
   for (let i = 0; i < maxSec * 30; i++) {
     if ((await phase()) === p) return;
     await step(1);
-    if (mode === 'video' || mode === 'witch') await shot();
+    if (recording) await shot();
   }
   throw new Error(`timeout waiting for phase ${p}, at ${await phase()}`);
 };
@@ -102,6 +109,8 @@ if (mode === 'shots') {
   await waitPhase('result');
   await run(2.5);
   await shot('10_result.png');
+  await run(30); // her reading types out along with her voice
+  await shot('10b_result_full.png');
   await page.evaluate(() => document.querySelector('[data-next]').click());
   await run(1.0);
   await shot('11_reshuffle.png');
@@ -134,6 +143,28 @@ if (mode === 'shots') {
   }
   await waitPhase('result');
   await run(1.5);
+} else if (mode === 'voice') {
+  // ~35 s: her welcome, a poke, picking, the seals, and the first part of a card reading
+  t0 = await page.evaluate(() => window.__time());
+  await run(0.5);
+  await page.click('[data-el=enter]');
+  await waitPhase('idle');
+  await run(1.2);
+  await page.evaluate(() => window.__game.pokeWitch());
+  await run(3.2);
+  await page.evaluate(() => window.__game.pickIndex(6));
+  await waitPhase('seals');
+  await run(1.6);
+  for (let k = 0; k < 3; k++) {
+    await page.evaluate(() => window.__game.tap());
+    if (k < 2) {
+      await waitPhase('seals');
+      await run(1.2);
+    }
+  }
+  await waitPhase('result');
+  await run(14);
+  voiceLog = await page.evaluate(() => window.__voice.log);
 } else {
   // ~18 s proof video: intro → enter → deal → pick → seals → flip → gift → result
   await run(0.6);
@@ -168,6 +199,25 @@ if (mode === 'witch') {
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', '30', '-i', path.join(outDir, 'frame_%04d.png'),
     '-filter_complex', `[0:v]split[a][b];[b]crop=${cw}:${cw}:${cx}:${cy},scale=400:400,pad=406:406:3:3:color=0xE9C26A[z];[a]scale=1280:720[m];[m][z]overlay=W-w-16:H-h-16`,
     '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '20', mp4], { stdio: 'inherit' });
+  console.log('video:', mp4);
+}
+if (mode === 'voice') {
+  // picture + each recorded line at the game-clock time she started it (frame 0 = t0)
+  const mp4 = path.resolve('screenshots', 'voice.mp4');
+  const firstFrameT = t0 + 1 / 30; // each frame is grabbed after its step
+  const lines = voiceLog.map((l) => ({ ...l, ms: Math.max(0, Math.round((l.t - firstFrameT) * 1000)) }));
+  console.log('voice lines:', lines.map((l) => `${l.id}@${(l.ms / 1000).toFixed(1)}s`).join(' '));
+  const inputs = lines.flatMap((l) => ['-i', path.resolve('public', 'voice', `${l.id}.mp3`)]);
+  // a line cut off by the next one stops where the next begins
+  const parts = lines.map((l, i) => {
+    const next = lines[i + 1];
+    const cut = next ? `,atrim=0:${((next.ms - l.ms) / 1000).toFixed(3)}` : '';
+    return `[${i + 1}:a]aresample=48000${cut},adelay=${l.ms}|${l.ms}[a${i}]`;
+  });
+  const mix = `${parts.join(';')};${lines.map((_, i) => `[a${i}]`).join('')}amix=inputs=${lines.length}:normalize=0[aout]`;
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', '30', '-i', path.join(outDir, 'frame_%04d.png'), ...inputs,
+    '-filter_complex', `[0:v]scale=1280:-2[v];${mix}`, '-map', '[v]', '-map', '[aout]', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '20',
+    '-c:a', 'aac', '-b:a', '128k', '-shortest', mp4], { stdio: 'inherit' });
   console.log('video:', mp4);
 }
 if (mode === 'video') {
