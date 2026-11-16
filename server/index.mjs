@@ -1,6 +1,7 @@
 // Production server: the built game (dist/) plus the prize API on one port.
 //   npm run build && npm start        → http://localhost:8787 (game) and /admin.html (admin)
-// Env: PORT (default 8787), ADMIN_PASSWORD (optional; otherwise one is generated on first run).
+// Env: PORT (default 8787), ADMIN_PASSWORD (optional; otherwise one is generated on first run),
+// DATA_DIR (where tarot.db lives; defaults to the Railway volume if attached, else server/data).
 import { createServer } from 'node:http';
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import path from 'node:path';

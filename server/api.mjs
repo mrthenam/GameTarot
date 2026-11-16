@@ -57,7 +57,8 @@ function checkPassword(pw, stored) {
 export function createApi(opts = {}) {
   const dev = !!opts.dev;
   const log = opts.log ?? ((m) => console.log(m));
-  const dataDir = opts.dataDir ?? path.join(ROOT, 'data');
+  // DATA_DIR, or a Railway volume when one is attached, keeps the database across deploys.
+  const dataDir = opts.dataDir ?? process.env.DATA_DIR ?? process.env.RAILWAY_VOLUME_MOUNT_PATH ?? path.join(ROOT, 'data');
   mkdirSync(dataDir, { recursive: true });
   const db = new DatabaseSync(path.join(dataDir, 'tarot.db'));
   db.exec(`
