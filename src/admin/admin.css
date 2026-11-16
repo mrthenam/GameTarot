@@ -292,7 +292,8 @@ svg.lucide { flex: none; }
 .seg button.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
 .seg button em { font-style: normal; font-size: 11.5px; color: var(--muted); }
 
-.icon-pick { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.icon-pick { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+@media (max-width: 640px) { .icon-pick { grid-template-columns: repeat(5, 1fr); } }
 .icon-pick label { position: relative; cursor: pointer; }
 .icon-pick input { position: absolute; opacity: 0; }
 .icon-pick span { display: grid; place-items: center; aspect-ratio: 1; border: 1px solid var(--border); border-radius: 9px; background: var(--surface-2); transition: border-color 0.15s, box-shadow 0.15s; }
@@ -329,11 +330,11 @@ svg.lucide { flex: none; }
 .table .right { text-align: right; }
 .table tr.off td { color: var(--muted); }
 .table tr.off .prize-cell img { opacity: 0.5; }
-.prize-cell { display: flex; align-items: center; gap: 12px; min-width: 220px; }
+.prize-cell { display: flex; align-items: center; gap: 12px; min-width: 200px; }
 .prize-thumb { width: 42px; height: 42px; flex: none; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); display: grid; place-items: center; }
 .prize-thumb img { width: 34px; height: 34px; object-fit: contain; }
 .prize-cell b { font-weight: 600; display: block; line-height: 1.3; }
-.prize-cell small { color: var(--muted); font-size: 12.5px; display: block; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prize-cell small { color: var(--muted); font-size: 12.5px; display: block; max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .row-actions { display: flex; gap: 2px; justify-content: flex-end; }
 .stock { min-width: 170px; }

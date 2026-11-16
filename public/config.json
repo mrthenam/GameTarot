@@ -3,18 +3,23 @@
   "subtitle": "Bốc một lá bài — nhận thông điệp và món quà từ vũ trụ",
   "shopName": "Tiệm Của Bạn",
   "turnsPerDay": 3,
-  "pityEvery": 5,
+  "pityEvery": 0,
   "voucherDays": 7,
   "codePrefix": "TAROT",
   "redeemNote": "Đưa mã này cho nhân viên khi thanh toán để nhận quà.",
+  "prizePlan": "phan-bo-qua-2m-v2",
   "prizes": [
-    { "id": "wish",     "name": "Lời chúc may mắn",    "desc": "Vũ trụ gửi bạn một ngày tràn đầy năng lượng tích cực!", "icon": "star",      "rarity": "common",    "weight": 26, "voucher": false },
-    { "id": "turn",     "name": "Thêm 1 lượt bốc",     "desc": "Định mệnh cho bạn thêm một cơ hội — bốc tiếp ngay!",     "icon": "hourglass", "rarity": "common",    "weight": 14, "voucher": false, "extraTurns": 1 },
-    { "id": "off10",    "name": "Voucher giảm 10%",    "desc": "Giảm 10% cho hóa đơn tiếp theo.",                        "icon": "ticket",    "rarity": "common",    "weight": 24, "voucher": true },
-    { "id": "cake",     "name": "Tặng 1 bánh ngọt",    "desc": "Một phần bánh ngọt miễn phí khi mua kèm đồ uống.",       "icon": "cake",      "rarity": "rare",      "weight": 12, "voucher": true },
-    { "id": "off20",    "name": "Voucher giảm 20%",    "desc": "Giảm 20% cho hóa đơn tiếp theo.",                        "icon": "giftbox",   "rarity": "rare",      "weight": 11, "voucher": true },
-    { "id": "drink",    "name": "Miễn phí 1 đồ uống",  "desc": "Một ly đồ uống bất kỳ, size M.",                         "icon": "tea",       "rarity": "epic",      "weight": 8,  "voucher": true },
-    { "id": "lixi",     "name": "Lì xì 50.000đ",       "desc": "Phiếu quà tặng trị giá 50.000đ cho mọi món.",            "icon": "envelope",  "rarity": "epic",      "weight": 4,  "voucher": true },
-    { "id": "jackpot",  "name": "Giải Đặc Biệt",       "desc": "Combo 2 đồ uống + 2 bánh ngọt hoàn toàn miễn phí!",     "icon": "crown",     "rarity": "legendary", "weight": 1,  "voucher": true }
+    { "id": "binh-nuoc",    "name": "Bình Nước Gấu Trượt Tuyết",        "desc": "Bình nước hình gấu trượt tuyết. Nhận tại quầy.",           "icon": "bottle",    "rarity": "legendary", "quantity": 100,   "rate": 0.005,   "weight": 100,     "voucher": true },
+    { "id": "tui-nhua-dan", "name": "Túi nhựa đan nhiều màu",           "desc": "Túi nhựa đan nhiều màu. Nhận tại quầy.",                   "icon": "woven-bag",  "rarity": "legendary", "quantity": 500,   "rate": 0.025,   "weight": 500,     "voucher": true },
+    { "id": "gau-bong",     "name": "Gấu bông 12 chòm sao/Túi Gấm",     "desc": "Gấu bông theo 12 chòm sao hoặc túi gấm. Nhận tại quầy.",   "icon": "teddy",  "rarity": "epic",      "quantity": 750,   "rate": 0.0375,  "weight": 750,     "voucher": true },
+    { "id": "so-tay",       "name": "Sổ tay nhật ký Manifest",          "desc": "Sổ tay nhật ký Manifest. Nhận tại quầy.",                  "icon": "notebook",     "rarity": "epic",      "quantity": 1500,  "rate": 0.075,   "weight": 1500,    "voucher": true },
+    { "id": "moc-khoa",     "name": "Móc khoá baby three CHĐ",          "desc": "Móc khoá baby three CHĐ. Nhận tại quầy.",                  "icon": "keychain",  "rarity": "epic",      "quantity": 2500,  "rate": 0.125,   "weight": 2500,    "voucher": true },
+    { "id": "vong-tay",     "name": "Vòng tay",                         "desc": "Vòng tay may mắn. Nhận tại quầy.",                         "icon": "bracelet",  "rarity": "rare",      "quantity": 5000,  "rate": 0.25,    "weight": 5000,    "voucher": true },
+    { "id": "free-topping", "name": "Free Topping dưới 10k",            "desc": "Miễn phí 1 phần topping dưới 10.000đ.",                    "icon": "topping",     "rarity": "rare",      "quantity": 7500,  "rate": 0.375,   "weight": 7500,    "voucher": true },
+    { "id": "free-upsize",  "name": "Free Upsize",                      "desc": "Miễn phí nâng size đồ uống.",                              "icon": "upsize",      "rarity": "rare",      "quantity": 10000, "rate": 0.5,     "weight": 10000,   "voucher": true },
+    { "id": "giam-20",      "name": "Giảm 20% tối đa 50.000đ",          "desc": "Giảm 20% hóa đơn, tối đa 50.000đ.",                        "icon": "discount",   "rarity": "rare",      "quantity": 5000,  "rate": 0.25,    "weight": 5000,    "voucher": true },
+    { "id": "mua-2-tang-1", "name": "Mua 2 tặng 1",                     "desc": "Mua 2 tặng 1.",                                            "icon": "buy2get1",      "rarity": "rare",      "quantity": 5000,  "rate": 0.25,    "weight": 5000,    "voucher": true },
+    { "id": "bogo-49k",     "name": "BOGO: Mua 1 bill 49k tặng 1 ly M", "desc": "Hóa đơn từ 49.000đ được tặng 1 ly size M.",                "icon": "bogo",   "rarity": "rare",      "quantity": 5000,  "rate": 0.25,    "weight": 5000,    "voucher": true },
+    { "id": "the-cau-chuc", "name": "Thẻ câu chúc",                     "desc": "Lời chúc may mắn từ vũ trụ dành riêng cho bạn.",           "icon": "wishcard", "rarity": "common",    "quantity": 1957150, "rate": 97.8575, "weight": 1957150, "voucher": false, "fallback": true }
   ]
 }

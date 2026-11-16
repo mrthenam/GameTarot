@@ -21,7 +21,8 @@ Tham số thử nghiệm, chỉ có tác dụng khi chạy `npm run dev` (bản 
 
 Mở `/admin.html`.
 - **Mật khẩu:** lần chạy đầu tiên, máy chủ tự tạo mật khẩu, in ra console và lưu ở `server/data/admin-password.txt`. Đổi được trong tab *Cài đặt*. Nếu đặt biến `ADMIN_PASSWORD` thì dùng mật khẩu đó.
-- **Dữ liệu:** nằm trong `server/data/tarot.db` (SQLite, không đưa vào git). Lần đầu chạy, máy chủ chép quà và cài đặt từ `public/config.json`; từ đó trang admin là nơi duy nhất sửa quà.
+- **Dữ liệu:** nằm trong `server/data/tarot.db` (SQLite, không đưa vào git); trên Railway nằm trong volume `/data`. Lần đầu chạy, máy chủ chép quà và cài đặt từ `public/config.json`; từ đó sửa quà trên trang admin.
+- **Bộ quà theo kế hoạch (`prizePlan`):** khi `public/config.json` có giá trị `prizePlan` mới (khác lần trước), máy chủ thay toàn bộ danh sách quà bằng danh sách trong file và áp dụng `pityEvery` của file, đúng một lần lúc khởi động. Số đã trúng được giữ theo mã món. Đây là cách đưa một bảng phân bổ quà mới lên mọi máy chủ khi deploy. Sau đó, chỉnh sửa trên trang admin được giữ cho đến khi đổi `prizePlan` lần nữa.
 
 Trang admin có thanh menu bên trái, thanh tìm nhanh mã quà ở trên, chế độ sáng/tối, và dùng được trên điện thoại.
 
@@ -44,9 +45,36 @@ Trang admin có thanh menu bên trái, thanh tìm nhanh mã quà ở trên, ch�
 > - Máy chủ chặn bốc quá nhanh từ một địa chỉ IP (tối đa 300 lượt mỗi 10 phút), và quà không bao giờ phát vượt số giải.
 > - Muốn giới hạn lượt chắc chắn theo từng khách thì cần đăng nhập, ví dụ bằng số điện thoại Zalo, như trong sơ đồ quy trình.
 
-### Không có máy chủ: `public/config.json`
+### Bộ quà hiện tại: `phan-bo-qua-2m-v2`
 
-Khi chỉ chạy bản tĩnh, game đọc file này. Các trường cài đặt giống tab *Cài đặt*. `prizes[]` dùng `weight` là tỉ lệ tương đối (tổng trọng số 100 thì `weight: 1` là 1%), không có số giải.
+Theo bảng *Draft phân bổ quà tặng*, tính cho 2.000.000 lượt bốc. Tỉ lệ trúng của mỗi món bằng đúng số giải ÷ 2.000.000. Bảng gốc làm tròn tới 2 chữ số, nên tổng các số đã làm tròn là 100,03%.
+
+| Món quà | Số giải | Tỉ lệ trúng | Độ hiếm |
+|---|---:|---:|---|
+| Bình Nước Gấu Trượt Tuyết | 100 | 0,005% | Huyền Thoại |
+| Túi nhựa đan nhiều màu | 500 | 0,025% | Huyền Thoại |
+| Gấu bông 12 chòm sao/Túi Gấm | 750 | 0,0375% | Sử Thi |
+| Sổ tay nhật ký Manifest | 1.500 | 0,075% | Sử Thi |
+| Móc khoá baby three CHĐ | 2.500 | 0,125% | Sử Thi |
+| Vòng tay | 5.000 | 0,25% | Hiếm |
+| Free Topping dưới 10k | 7.500 | 0,375% | Hiếm |
+| Free Upsize | 10.000 | 0,5% | Hiếm |
+| Giảm 20% tối đa 50.000đ | 5.000 | 0,25% | Hiếm |
+| Mua 2 tặng 1 | 5.000 | 0,25% | Hiếm |
+| BOGO: Mua 1 bill 49k tặng 1 ly M | 5.000 | 0,25% | Hiếm |
+| Thẻ câu chúc (quà dự phòng, không phát mã) | 1.957.150 | 97,8575% | Thường |
+
+- 11 món đầu phát mã quà để đổi tại quầy. Mỗi lượt có 2,1425% cơ hội trúng một trong các món này.
+- Bảo đảm quà Hiếm đã tắt (`pityEvery: 0`). Nếu bật, khách sẽ trúng quà Hiếm trở lên khoảng 1 trong 6 lượt, quà hết nhanh hơn nhiều so với kế hoạch.
+- Thẻ câu chúc là quà dự phòng nên không giới hạn số lượng. Số 1.957.150 trong bảng chỉ là phần còn lại của 2.000.000 lượt.
+
+### Các trường của `public/config.json`
+
+Các trường cài đặt giống tab *Cài đặt*. Mỗi món trong `prizes[]` có:
+- `rate`: tỉ lệ trúng (%), dùng tối đa 4 chữ số thập phân.
+- `quantity`: tổng số giải; bỏ trống nghĩa là không giới hạn.
+- `fallback: true`: đánh dấu quà dự phòng.
+- `weight`: tỉ lệ tương đối, chỉ dùng khi chạy bản tĩnh không có máy chủ. Khi đó không có số giải.
 - `rarity`: `common` (Thường) · `rare` (Hiếm) · `epic` (Sử Thi) · `legendary` (Huyền Thoại). Độ hiếm quyết định màu phong ấn khi mở bài và độ hoành tráng của hiệu ứng.
 - `icon`: `star`, `hourglass`, `ticket`, `giftbox`, `tea`, `envelope`, `crown`, `cake`, `crystal`.
 - `voucher: true` sẽ sinh mã quà và lưu vào **Túi quà**. Đặt `extraTurns: 1` để món quà cộng thêm lượt bốc.
@@ -123,7 +151,8 @@ Script dùng Chrome thật có GPU, bước thời gian cố định 1/30 s (`?c
 | Căn phòng | Tranh nền cửa sổ trăng, kệ sách, nến | 2048×1143, phủ kín khung nhìn, đặt ở z = −3,4 m | `src/assets/img/room.webp` | 10¢ |
 | Cánh cửa | Cửa đôi gỗ mun khắc rune | 2,0×3,0 m, chia 2 cánh | `src/assets/img/door.webp` (848×1264) | 7¢ |
 | Icon quà (9) | star, hourglass, ticket, giftbox, tea, envelope, crown, cake, crystal (đã tách nền) | 72 px trong bảng; ~0,14 m trong cảnh | `src/assets/icons/*.webp` (384×384) | 10¢ |
+| Ảnh quà theo bộ phân bổ (12) | bottle, woven-bag, teddy, notebook, keychain, bracelet, topping, upsize, discount, buy2get1, bogo, wishcard (đã tách nền, cùng phong cách bộ icon cũ) | 72 px trong bảng; ~0,14 m trong cảnh | `src/assets/icons/*.webp` (384×384); bảng gốc `asset_src/misc/gifts_kit_a.png`, `gifts_kit_b.png` | 2 × 10¢ |
 | Âm thanh | Nhạc nền và hiệu ứng tổng hợp bằng WebAudio | vòng lặp 8 ô nhịp, 72 BPM | `src/audio/audio.ts` | 0 |
 | Texture thủ tục | Phong ấn, vòng ma thuật, tia sáng, khăn nhung, tường đá | — | `src/scene/textures.ts` | 0 |
 
-**Tổng chi phí tạo tài nguyên: 1,98 $.**
+**Tổng chi phí tạo tài nguyên: 2,18 $.**

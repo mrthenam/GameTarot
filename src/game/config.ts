@@ -11,7 +11,10 @@ export const RARITY: Record<Rarity, { label: string; color: string; tier: number
 };
 export const TIER_ORDER: Rarity[] = ['common', 'rare', 'epic', 'legendary'];
 
-export const ICONS = ['star', 'hourglass', 'ticket', 'giftbox', 'tea', 'envelope', 'crown', 'cake', 'crystal'] as const;
+export const ICONS = [
+  'star', 'hourglass', 'ticket', 'giftbox', 'tea', 'envelope', 'crown', 'cake', 'crystal',
+  'bottle', 'woven-bag', 'teddy', 'notebook', 'keychain', 'bracelet', 'topping', 'upsize', 'discount', 'buy2get1', 'bogo', 'wishcard',
+] as const;
 export type IconName = (typeof ICONS)[number];
 
 export interface Prize {

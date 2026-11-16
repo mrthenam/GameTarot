@@ -38,6 +38,9 @@ export const prizeIconUrl = (n: string) => prizeIcons[`../assets/icons/${n}.webp
 export const PRIZE_ICONS: Record<string, string> = {
   star: 'Ngôi sao', hourglass: 'Đồng hồ cát', ticket: 'Vé giảm giá', giftbox: 'Hộp quà', tea: 'Đồ uống',
   envelope: 'Bao lì xì', crown: 'Vương miện', cake: 'Bánh ngọt', crystal: 'Pha lê',
+  bottle: 'Bình nước gấu', 'woven-bag': 'Túi nhựa đan', teddy: 'Gấu bông & túi gấm', notebook: 'Sổ tay',
+  keychain: 'Móc khoá', bracelet: 'Vòng tay', topping: 'Topping', upsize: 'Nâng size', discount: 'Phiếu giảm 20%',
+  buy2get1: 'Mua 2 tặng 1', bogo: 'Hóa đơn tặng ly', wishcard: 'Thẻ câu chúc',
 };
 
 export const RARITY: Record<Rarity, string> = { common: 'Thường', rare: 'Hiếm', epic: 'Sử Thi', legendary: 'Huyền Thoại' };

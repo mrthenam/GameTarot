@@ -10,7 +10,10 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const RARITIES = ['common', 'rare', 'epic', 'legendary'];
 const TIER = { common: 0, rare: 1, epic: 2, legendary: 3 };
-const ICONS = ['star', 'hourglass', 'ticket', 'giftbox', 'tea', 'envelope', 'crown', 'cake', 'crystal'];
+const ICONS = [
+  'star', 'hourglass', 'ticket', 'giftbox', 'tea', 'envelope', 'crown', 'cake', 'crystal',
+  'bottle', 'woven-bag', 'teddy', 'notebook', 'keychain', 'bracelet', 'topping', 'upsize', 'discount', 'buy2get1', 'bogo', 'wishcard',
+];
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const DAY_MS = 86400000;
 const TOKEN_HOURS = 12;
@@ -95,8 +98,7 @@ export function createApi(opts = {}) {
     }
   };
 
-  // ---------------------------------------------------------------- first run
-  if (!db.prepare('SELECT COUNT(*) AS n FROM prizes').get().n) seedFromConfig();
+  // ---------------------------------------------------------------- first run (prizes: see the end)
   if (!kvGet('secret')) kvSet('secret', randomBytes(32).toString('hex'));
   const pwFile = path.join(dataDir, 'admin-password.txt');
   if (!process.env.ADMIN_PASSWORD && !kvGet('admin_hash')) {
@@ -106,32 +108,36 @@ export function createApi(opts = {}) {
     log(`[tarot] Mật khẩu trang admin: ${pw} (đã lưu ở ${pwFile})`);
   }
 
-  /** Copy shop settings and prizes from public/config.json; weights become % rates. */
-  function seedFromConfig() {
-    let raw = {};
+  /** public/config.json: the shop's starting settings and its prize plan. */
+  function readConfig() {
     try {
-      raw = JSON.parse(readFileSync(path.join(ROOT, '..', 'public', 'config.json'), 'utf8'));
+      return JSON.parse(readFileSync(path.join(ROOT, '..', 'public', 'config.json'), 'utf8'));
     } catch {
-      /* no file: defaults */
+      return {};
     }
-    const settings = { ...DEFAULT_SETTINGS };
-    for (const k of Object.keys(settings)) if (raw[k] !== undefined && typeof raw[k] === typeof settings[k]) settings[k] = raw[k];
-    kvSet('settings', JSON.stringify(settings));
+  }
+
+  /** Prizes from config.json in the shape savePrizes() takes. `rate` (%) wins over `weight`. */
+  function configPrizes(raw) {
     const list = Array.isArray(raw.prizes) && raw.prizes.length ? raw.prizes : [
       { id: 'wish', name: 'Lời chúc may mắn', desc: 'Vũ trụ gửi bạn một ngày tràn đầy năng lượng tích cực!', icon: 'star', rarity: 'common', weight: 1, voucher: false },
     ];
     const total = list.reduce((s, p) => s + (Number(p.weight) > 0 ? Number(p.weight) : 0), 0) || 1;
+    const explicitFb = list.some((p) => p.fallback === true);
     let fb = list.findIndex((p) => p.voucher === false && !p.extraTurns);
     if (fb < 0) fb = 0;
-    const ins = db.prepare(`INSERT INTO prizes (id, pos, name, desc, icon, rarity, rate, quantity, daily_limit, voucher, extra_turns, active, fallback)
-      VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, ?, 1, ?)`);
-    tx(() => list.forEach((p, i) => ins.run(
-      String(p.id || `qua${i + 1}`), i, String(p.name || 'Món quà'), String(p.desc || ''),
-      ICONS.includes(p.icon) ? p.icon : 'giftbox', RARITIES.includes(p.rarity) ? p.rarity : 'common',
-      Math.round(((Number(p.weight) > 0 ? Number(p.weight) : 0) / total) * 10000) / 100,
-      p.voucher === false ? 0 : 1, Math.max(0, Math.floor(Number(p.extraTurns) || 0)), i === fb ? 1 : 0,
-    )));
-    log('[tarot] Đã tạo dữ liệu quà ban đầu từ public/config.json');
+    return list.map((p, i) => {
+      const fallback = explicitFb ? p.fallback === true : i === fb;
+      return {
+        id: String(p.id || `qua${i + 1}`), name: String(p.name || 'Món quà'), desc: String(p.desc || ''),
+        icon: p.icon, rarity: p.rarity,
+        rate: typeof p.rate === 'number' ? p.rate : ((Number(p.weight) > 0 ? Number(p.weight) : 0) / total) * 100,
+        // the fallback is never limited (its "quantity" in a plan is just the remainder)
+        quantity: fallback ? null : p.quantity ?? null, dailyLimit: fallback ? null : p.dailyLimit ?? null,
+        voucher: p.voucher !== false, extraTurns: p.extraTurns ?? 0, active: fallback || p.active !== false,
+        fallback,
+      };
+    });
   }
 
   // ---------------------------------------------------------------- reads
@@ -342,7 +348,7 @@ export function createApi(opts = {}) {
         id, pos: i, name, desc: String(p.desc ?? '').trim(),
         icon: ICONS.includes(p.icon) ? p.icon : 'giftbox',
         rarity: RARITIES.includes(p.rarity) ? p.rarity : 'common',
-        rate: Math.round(rate * 100) / 100,
+        rate: Math.round(rate * 10000) / 10000,
         quantity: intOrNull(p.quantity, 0), dailyLimit: intOrNull(p.dailyLimit, 1),
         voucher: !!p.voucher, extraTurns: Math.max(0, Math.min(5, Math.floor(Number(p.extraTurns) || 0))),
         active: p.active !== false, fallback: !!p.fallback,
@@ -420,6 +426,31 @@ export function createApi(opts = {}) {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store');
     res.end(JSON.stringify(data));
+  }
+
+  // ---------------------------------------------------------------- prizes on start
+  // An empty database takes settings and prizes from config.json. A new `prizePlan` id in
+  // config.json replaces the prize list once (won counts kept per id) and applies its pityEvery,
+  // so a reworked prize plan reaches every server on its next deploy; admin edits stay otherwise.
+  try {
+    const raw = readConfig();
+    const plan = typeof raw.prizePlan === 'string' && raw.prizePlan.trim() ? raw.prizePlan.trim() : null;
+    if (!db.prepare('SELECT COUNT(*) AS n FROM prizes').get().n) {
+      const st = { ...DEFAULT_SETTINGS };
+      for (const k of Object.keys(st)) if (raw[k] !== undefined && typeof raw[k] === typeof st[k]) st[k] = raw[k];
+      kvSet('settings', JSON.stringify(st));
+      savePrizes(configPrizes(raw));
+      if (plan) kvSet('prize_plan', plan);
+      log('[tarot] Đã tạo dữ liệu quà ban đầu từ public/config.json');
+    } else if (plan && kvGet('prize_plan') !== plan) {
+      savePrizes(configPrizes(raw));
+      if (typeof raw.pityEvery === 'number') kvSet('settings', JSON.stringify({ ...settings(), pityEvery: raw.pityEvery }));
+      kvSet('prize_plan', plan);
+      log(`[tarot] Đã áp dụng bộ quà "${plan}" từ public/config.json`);
+    }
+  } catch (e) {
+    // a bad config must not take the server down: keep the current prizes and say why
+    log(`[tarot] Không áp dụng được quà từ public/config.json: ${e?.message || e}`);
   }
 
   return async function handle(req, res) {

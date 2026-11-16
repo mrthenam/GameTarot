@@ -8,6 +8,13 @@ const blank = (): Prize => ({
   won: 0, wonToday: 0, voucher: true, extraTurns: 0, active: true, fallback: false,
 });
 
+/** "≈ 1 trong 20.000 lượt" for small rates, "≈ 98/100 lượt" for big ones. */
+function odds(rate: number) {
+  if (rate <= 0) return 'không trúng';
+  if (rate >= 1) return `≈ ${fmt(rate, 1)}/100 lượt`;
+  return `≈ 1 trong ${fmt(Math.round(100 / rate))} lượt`;
+}
+
 const activeSum = (list: Prize[]) => list.filter((p) => p.active).reduce((s, p) => s + p.rate, 0);
 
 function newId(list: Prize[]) {
@@ -30,11 +37,11 @@ export function renderPrizes(view: HTMLElement, ctx: Ctx) {
           <div class="rate-sum">
             <div>
               <div class="kpi-label">Tổng tỉ lệ quà đang phát</div>
-              <div class="kpi-value" style="margin:2px 0 0">${fmt(sum, 2)}%</div>
+              <div class="kpi-value" style="margin:2px 0 0">${fmt(sum, 4)}%</div>
             </div>
-            <div class="bar ${sum > 100.0001 ? 'over' : ''}" role="img" aria-label="Tổng tỉ lệ ${fmt(sum, 2)} trên 100%"><i style="width:${Math.min(100, sum)}%"></i></div>
+            <div class="bar ${sum > 100.0001 ? 'over' : ''}" role="img" aria-label="Tổng tỉ lệ ${fmt(sum, 4)} trên 100%"><i style="width:${Math.min(100, sum)}%"></i></div>
             <div class="hint" style="max-width:420px">${rest > 0.0001
-              ? `Phần còn lại <b>${fmt(rest, 2)}%</b> thuộc về quà dự phòng${fb ? ` “${esc(fb.name)}”` : ''}.`
+              ? `Phần còn lại <b>${fmt(rest, 4)}%</b> thuộc về quà dự phòng${fb ? ` “${esc(fb.name)}”` : ''}.`
               : rest < -0.0001 ? '<span style="color:var(--danger)">Tổng đang vượt 100%.</span>' : 'Đã đủ 100%.'}
               Món hết số giải, đủ số trong ngày hoặc tạm ngừng sẽ nhường phần của nó cho quà dự phòng.</div>
           </div>
@@ -75,7 +82,7 @@ export function renderPrizes(view: HTMLElement, ctx: Ctx) {
         <div style="min-width:0"><b>${esc(p.name)}</b><small>${esc(p.desc) || '&nbsp;'}</small></div>
       </div></td>
       <td data-label="Độ hiếm">${rarityBadge(p.rarity)}</td>
-      <td data-label="Tỉ lệ trúng"><div class="rate-cell"><b>${fmt(p.rate, 2)}%</b><div class="hint">≈ ${fmt(p.rate * 10, 1)}/1.000 lượt</div></div></td>
+      <td data-label="Tỉ lệ trúng"><div class="rate-cell"><b>${fmt(p.rate, 4)}%</b><div class="hint">${odds(p.rate)}</div></div></td>
       <td data-label="Số giải"><div class="stock">
         ${left === null ? `<div class="stock-line"><span>Đã trúng <b class="num">${fmt(p.won)}</b></span><span class="muted">không giới hạn</span></div>`
           : `<div class="stock-line"><span>Còn <b class="num">${fmt(left)}</b> / ${fmt(p.quantity ?? 0)}</span>${out ? '<span class="badge b-danger">Hết</span>' : ratio <= 0.1 ? '<span class="badge b-warning">Sắp hết</span>' : ''}</div>
@@ -117,7 +124,7 @@ export function renderPrizes(view: HTMLElement, ctx: Ctx) {
         <div class="field"><label for="f-rarity">Độ hiếm</label><select class="select" id="f-rarity" name="rarity">${rarities}</select>
           <span class="hint">Quyết định màu phong ấn và hiệu ứng khi mở bài.</span></div>
         <div class="field"><label for="f-rate">Tỉ lệ trúng</label>
-          <div class="input-group"><input class="input num" id="f-rate" name="rate" type="number" min="0" max="100" step="0.01" value="${p.rate}"><span class="suffix">%</span></div>
+          <div class="input-group"><input class="input num" id="f-rate" name="rate" type="number" min="0" max="100" step="0.0001" value="${p.rate}"><span class="suffix">%</span></div>
           <span class="hint" id="rate-hint"></span></div>
         <div class="section-title span-2">Số lượng</div>
         <div class="field"><label for="f-qty">Tổng số giải</label>
@@ -152,8 +159,8 @@ export function renderPrizes(view: HTMLElement, ctx: Ctx) {
       const rate = Number(el<HTMLInputElement>('#f-rate').value) || 0;
       const total = otherSum + (active ? rate : 0);
       el('#rate-hint').innerHTML = total > 100.0001
-        ? `<span style="color:var(--danger)">Tổng sẽ là ${fmt(total, 2)}%, vượt 100%.</span>`
-        : `Tổng các món đang phát: ${fmt(total, 2)}%. Tối đa còn ${fmt(Math.max(0, 100 - otherSum), 2)}%.`;
+        ? `<span style="color:var(--danger)">Tổng sẽ là ${fmt(total, 4)}%, vượt 100%.</span>`
+        : `Tổng các món đang phát: ${fmt(total, 4)}%. Tối đa còn ${fmt(Math.max(0, 100 - otherSum), 4)}%.`;
     };
     form.addEventListener('input', sync);
     sync();
