@@ -31,6 +31,7 @@ const LINES = {
   shuffle: ['Để ta xáo lại các vì sao...', 'Bộ bài đang thì thầm...'],
   noTurns: ['Năng lượng của bạn đã cạn... hãy quay lại khi trăng lên nhé.'],
   pity: ['Năng lượng vũ trụ đã đầy... lá này chắc chắn không tầm thường!'],
+  offline: ['Các vì sao đang bị mây che... bạn thử lại sau giây lát nhé.'],
   poke: ['Hihi... chọc ta làm gì, hãy chọn một lá bài đi!', 'Ta không phải lá bài đâu nhé~', 'Đôi mắt ta thấy cả định mệnh của bạn đấy...', 'Suỵt... các vì sao đang nghe lén đấy.'],
 };
 
@@ -278,9 +279,21 @@ export class Game {
       void this.say(LINES.noTurns[0], 3);
       return;
     }
-    const result = this.state.draw();
-    if (!result) return;
     this.phase = 'busy';
+    let result: DrawResult | null = null;
+    try {
+      result = await this.state.draw(); // asks the prize server when there is one
+    } catch (e) {
+      console.warn(e);
+      this.phase = 'idle';
+      this.stage.witch.setMood('sad', 2);
+      void this.say(e instanceof Error && e.message ? e.message : LINES.offline[0], 3);
+      return;
+    }
+    if (!result) {
+      this.phase = 'idle';
+      return;
+    }
     document.body.style.cursor = '';
     this.deck.interactive = false;
     this.deck.setHovered(null);

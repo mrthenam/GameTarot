@@ -1,4 +1,5 @@
-// Shop-editable configuration (public/config.json → dist/config.json after build).
+// Shop configuration. With the prize server running (server/api.mjs) it comes from /api/config and
+// prizes are drawn on the server; otherwise public/config.json is read and prizes are drawn locally.
 
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary';
 
@@ -19,6 +20,7 @@ export interface Prize {
   desc: string;
   icon: IconName;
   rarity: Rarity;
+  /** Relative weight for local draws (unused when the server draws). */
   weight: number;
   voucher: boolean;
   extraTurns: number;
@@ -34,6 +36,8 @@ export interface GameConfig {
   codePrefix: string;
   redeemNote: string;
   prizes: Prize[];
+  /** True when the prize server decides draws, stock and codes. */
+  server: boolean;
 }
 
 const DEFAULTS: GameConfig = {
@@ -45,6 +49,7 @@ const DEFAULTS: GameConfig = {
   voucherDays: 7,
   codePrefix: 'TAROT',
   redeemNote: 'Đưa mã này cho nhân viên khi thanh toán để nhận quà.',
+  server: false,
   prizes: [
     { id: 'wish', name: 'Lời chúc may mắn', desc: 'Vũ trụ gửi bạn một ngày tràn đầy năng lượng tích cực!', icon: 'star', rarity: 'common', weight: 40, voucher: false, extraTurns: 0 },
     { id: 'turn', name: 'Thêm 1 lượt bốc', desc: 'Định mệnh cho bạn thêm một cơ hội!', icon: 'hourglass', rarity: 'common', weight: 20, voucher: false, extraTurns: 1 },
@@ -61,32 +66,46 @@ function num(v: unknown, fallback: number, min = 0): number {
   return typeof v === 'number' && isFinite(v) && v >= min ? v : fallback;
 }
 
-export async function loadConfig(): Promise<GameConfig> {
-  let raw: Record<string, unknown> = {};
+/** One prize from config.json or the server, with safe defaults. */
+export function toPrize(p: Record<string, unknown>, i = 0, weight = num(p.weight, 0)): Prize {
+  return {
+    id: str(p.id, `prize${i}`),
+    name: str(p.name, 'Món quà bí ẩn'),
+    desc: str(p.desc, ''),
+    icon: (ICONS as readonly string[]).includes(p.icon as string) ? (p.icon as IconName) : 'giftbox',
+    rarity: (TIER_ORDER as string[]).includes(p.rarity as string) ? (p.rarity as Rarity) : 'common',
+    weight,
+    voucher: p.voucher !== false,
+    extraTurns: Math.floor(num(p.extraTurns, 0)),
+  };
+}
+
+async function getJson(url: string): Promise<Record<string, unknown> | null> {
   try {
-    const res = await fetch(`${import.meta.env.BASE_URL}config.json`, { cache: 'no-store' });
-    if (res.ok) raw = await res.json();
-    else console.warn('config.json not found, using defaults');
-  } catch (e) {
-    console.warn('config.json could not be read, using defaults', e);
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok || !(res.headers.get('content-type') ?? '').includes('json')) return null;
+    return (await res.json()) as Record<string, unknown>;
+  } catch {
+    return null;
   }
-  const prizes: Prize[] = [];
-  if (Array.isArray(raw.prizes)) {
-    for (const p of raw.prizes as Record<string, unknown>[]) {
-      const rarity = (TIER_ORDER as string[]).includes(p.rarity as string) ? (p.rarity as Rarity) : 'common';
-      const icon = (ICONS as readonly string[]).includes(p.icon as string) ? (p.icon as IconName) : 'giftbox';
-      const weight = num(p.weight, 0);
-      if (weight <= 0) continue;
-      prizes.push({
-        id: str(p.id, `prize${prizes.length}`),
-        name: str(p.name, 'Món quà bí ẩn'),
-        desc: str(p.desc, ''),
-        icon,
-        rarity,
-        weight,
-        voucher: p.voucher !== false,
-        extraTurns: Math.floor(num(p.extraTurns, 0)),
-      });
+}
+
+export async function loadConfig(): Promise<GameConfig> {
+  const base = import.meta.env.BASE_URL;
+  let server = false;
+  let raw: Record<string, unknown> = {};
+  let prizes: Prize[] = [];
+  const api = await getJson(`${base}api/config`);
+  if (api && Array.isArray(api.prizes) && api.settings) {
+    server = true;
+    raw = api.settings as Record<string, unknown>;
+    prizes = (api.prizes as Record<string, unknown>[]).map((p, i) => toPrize(p, i, 1));
+  } else {
+    const file = await getJson(`${base}config.json`);
+    if (file) raw = file;
+    else console.warn('config.json could not be read, using defaults');
+    if (Array.isArray(raw.prizes)) {
+      prizes = (raw.prizes as Record<string, unknown>[]).map((p, i) => toPrize(p, i)).filter((p) => p.weight > 0);
     }
   }
   return {
@@ -99,5 +118,6 @@ export async function loadConfig(): Promise<GameConfig> {
     codePrefix: str(raw.codePrefix, DEFAULTS.codePrefix),
     redeemNote: str(raw.redeemNote, DEFAULTS.redeemNote),
     prizes: prizes.length ? prizes : DEFAULTS.prizes,
+    server,
   };
 }

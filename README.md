@@ -6,31 +6,47 @@ Game web 3D (three.js + Vite + TypeScript). Người chơi bước qua cánh c�
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173 (mở được trong mạng LAN)
-npm run build      # bản phát hành → dist/ (đưa nguyên thư mục lên hosting tĩnh)
+npm run dev        # http://localhost:5173: game + máy chủ quà, admin ở /admin.html
+npm run build      # bản phát hành → dist/
+npm start          # chạy bản phát hành kèm máy chủ quà: http://localhost:8787, admin ở /admin.html
 ```
+
+- Cần Node 22.13 trở lên, vì máy chủ dùng SQLite có sẵn trong Node (`node:sqlite`).
+- `npm start` đọc biến môi trường `PORT` (mặc định 8787) và `ADMIN_PASSWORD` (không bắt buộc).
+- Có thể đưa riêng `dist/` lên hosting tĩnh, không chạy máy chủ. Khi đó game tự bốc quà theo `public/config.json` như trước, không có số giải, không có trang admin.
 
 Tham số thử nghiệm, chỉ có tác dụng khi chạy `npm run dev` (bản build sẽ bỏ qua): `?turns=99` để đặt số lượt, `?reset` để xóa dữ liệu đã lưu.
 
-## Cấu hình cho cửa hàng: `public/config.json` (sau khi build là `dist/config.json`)
+## Quà, số giải và tỉ lệ trúng: trang admin
 
-| Trường | Ý nghĩa |
+Mở `/admin.html`.
+- **Mật khẩu:** lần chạy đầu tiên, máy chủ tự tạo mật khẩu, in ra console và lưu ở `server/data/admin-password.txt`. Đổi được trong tab *Cài đặt*. Nếu đặt biến `ADMIN_PASSWORD` thì dùng mật khẩu đó.
+- **Dữ liệu:** nằm trong `server/data/tarot.db` (SQLite, không đưa vào git). Lần đầu chạy, máy chủ chép quà và cài đặt từ `public/config.json`; từ đó trang admin là nơi duy nhất sửa quà.
+
+| Tab | Làm được gì |
 |---|---|
-| `gameTitle`, `subtitle`, `shopName` | Tên game, câu giới thiệu, tên cửa hàng ở màn mở đầu |
-| `turnsPerDay` | Số lượt bốc mỗi ngày (hồi lại lúc 0h theo giờ máy người chơi) |
-| `pityEvery` | Sau N lần liên tiếp chỉ trúng quà *Thường*, lần sau chắc chắn từ *Hiếm* trở lên (0 = tắt) |
-| `voucherDays` | Hạn dùng mã quà, tính bằng ngày |
-| `codePrefix`, `redeemNote` | Tiền tố mã quà (VD `TAROT-7KQ2XM`) và lời dặn khi đổi quà |
-| `prizes[]` | Danh sách quà. Mỗi món gồm `name`, `desc`, `icon`, `rarity`, `weight`, `voucher`, `extraTurns` |
+| Quà & tỉ lệ | Thêm, sửa, xóa, tạm ngừng từng món quà: tên, mô tả, biểu tượng, độ hiếm, **tỉ lệ trúng (%)**, **tổng số giải**, **số giải tối đa mỗi ngày**, có phát mã hay không, cộng thêm lượt. Xem số đã trúng, số còn lại, số hôm nay và số lần trúng dự kiến trên 1.000 lượt. Có nút đặt lại "Đã trúng" khi bắt đầu đợt khuyến mại mới. |
+| Mã quà | Tra mã khách đưa, xem món quà, hạn dùng và trạng thái; bấm *Xác nhận đổi quà* để đánh dấu đã dùng. Mã đã đổi hoặc đã hết hạn sẽ bị từ chối. |
+| Cài đặt | Tên cửa hàng, tên game, lượt bốc mỗi ngày, bảo đảm quà Hiếm sau N lượt, hạn dùng mã, tiền tố mã, lời dặn; đổi mật khẩu. |
 
+**Cách máy chủ bốc quà:**
+- Mỗi lượt, mỗi món có đúng xác suất bằng tỉ lệ đặt cho nó. Tổng tỉ lệ các món đang phát không được vượt 100%.
+- Phần còn lại (nếu tổng chưa đủ 100%) thuộc về **quà dự phòng**. Quà dự phòng là đúng một món, luôn bật và không giới hạn số lượng, ví dụ *Lời chúc may mắn*.
+- Món đã hết số giải, đã đủ số trong ngày hoặc đang tạm ngừng sẽ nhường phần tỉ lệ của nó cho quà dự phòng, nên tỉ lệ của các món khác không bị đội lên.
+- Khách trúng quà *Thường* liên tiếp đủ số lần trong Cài đặt thì lượt sau chỉ bốc trong các món Hiếm trở lên còn quà, theo tỉ lệ tương đối giữa chúng. Máy chủ đếm chuỗi này theo mã người chơi.
+- Mã quà do máy chủ phát, không trùng, có hạn dùng, và được lưu lại để nhân viên kiểm tra.
+
+> **Lưu ý:**
+> - Số lượt mỗi ngày vẫn được đếm trên máy người chơi (`localStorage`), nên người rành kỹ thuật có thể xóa dữ liệu để có lượt mới.
+> - Máy chủ chặn bốc quá nhanh từ một địa chỉ IP (tối đa 300 lượt mỗi 10 phút), và quà không bao giờ phát vượt số giải.
+> - Muốn giới hạn lượt chắc chắn theo từng khách thì cần đăng nhập, ví dụ bằng số điện thoại Zalo, như trong sơ đồ quy trình.
+
+### Không có máy chủ: `public/config.json`
+
+Khi chỉ chạy bản tĩnh, game đọc file này. Các trường cài đặt giống tab *Cài đặt*. `prizes[]` dùng `weight` là tỉ lệ tương đối (tổng trọng số 100 thì `weight: 1` là 1%), không có số giải.
 - `rarity`: `common` (Thường) · `rare` (Hiếm) · `epic` (Sử Thi) · `legendary` (Huyền Thoại). Độ hiếm quyết định màu phong ấn khi mở bài và độ hoành tráng của hiệu ứng.
-- `weight`: tỉ lệ tương đối. Ví dụ tổng trọng số 100 thì `weight: 1` nghĩa là xác suất 1%.
 - `icon`: `star`, `hourglass`, `ticket`, `giftbox`, `tea`, `envelope`, `crown`, `cake`, `crystal`.
 - `voucher: true` sẽ sinh mã quà và lưu vào **Túi quà**. Đặt `extraTurns: 1` để món quà cộng thêm lượt bốc.
-
-Sửa file này không cần build lại, chỉ cần tải lại trang.
-
-> **Lưu ý:** game chạy hoàn toàn trên trình duyệt. Lượt chơi và mã quà lưu trong `localStorage` của máy người chơi, nên người rành kỹ thuật có thể xóa dữ liệu để chơi lại, và mã quà không được kiểm tra với máy chủ. Nhân viên nên kiểm tra mã ngay trên màn hình *Túi quà* của khách. Nếu cần chống gian lận hoặc giới hạn số lượng quà thật, phải có thêm backend.
 
 ## Đã làm
 
@@ -59,11 +75,17 @@ Sửa file này không cần build lại, chỉ cần tải lại trang.
 - Vòng lặp giữ chân người chơi: lượt theo ngày với đồng hồ đếm ngược, quà "+1 lượt", thanh *Năng lượng vũ trụ* (bảo đảm quà Hiếm), *Bộ sưu tập* 22 lá (ưu tiên ra lá chưa có), *Túi quà*.
 - Âm thanh tự tổng hợp bằng WebAudio: nhạc nền huyền bí (Rê thứ, harp/pad/celesta), tiếng vỡ phong ấn, nhịp tim, riser, lật bài, quà. Có nút tắt tiếng.
 - Bố cục dọc cho điện thoại (bảng kết quả dạng sheet dưới, nút "Bốc tiếp" luôn hiện) và bố cục ngang cho máy tính.
+- Máy chủ quà (`server/`, Node + SQLite) và trang admin (`admin.html`):
+  - quà có tỉ lệ trúng, tổng số giải và giới hạn mỗi ngày;
+  - quà dự phòng khi hết quà;
+  - bốc quà và phát mã ngay trên máy chủ;
+  - nhân viên tra và xác nhận đổi mã;
+  - thống kê lượt bốc.
 
 ## Còn lại / gợi ý
 
 - Giọng nói và nhạc do AI tạo chưa làm được, vì khóa `GOOGLE_API_KEY` hiện tại không có quyền dùng Lyria (nhạc) hay Gemini TTS (giọng). Hiện tại âm thanh được tổng hợp bằng code và lời phù thủy hiện bằng chữ.
-- Backend để kiểm tra mã quà và giới hạn số lượng quà thật (xem lưu ý ở trên).
+- Đếm lượt chơi trên máy chủ theo từng khách. Cần khách đăng nhập (số điện thoại Zalo) mới chống được việc xóa dữ liệu để có lượt mới.
 - Có thể thêm: chia sẻ lá bài lên mạng xã hội để nhận thêm lượt, phần thưởng khi hoàn thành bộ 22 lá.
 - **Tạm hoãn, chờ lệnh (13/11/2026): sửa theo [chính sách kiểm duyệt Zalo Mini App](https://miniapp.zaloplatforms.com/documents/zalo-mini-app-censorship-policy/?lang=vi).** Zalo không cho mở web bên ngoài qua webview, nên game phải được đóng vào chính gói Mini App (giới hạn 10 MB mỗi gói, 3 MB mỗi file; bản build hiện tại khoảng 7 MB). Việc cần làm khi bắt đầu:
   - Sơ đồ swimlane (`.archify/workflow-tich-luot-choi-20261112-110518/`): ở Bước 1, chỉ xin số điện thoại khi khách bấm chơi hoặc xem lượt, không xin ngay lúc mở; khách từ chối vẫn xem được thể lệ và danh sách quà.
