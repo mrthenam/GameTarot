@@ -44,7 +44,7 @@ export interface GameConfig {
 }
 
 const DEFAULTS: GameConfig = {
-  gameTitle: 'Căn Phòng Tarot',
+  gameTitle: 'Tarot Ánh Trăng',
   subtitle: 'Bốc một lá bài — nhận thông điệp và món quà từ vũ trụ',
   shopName: '',
   turnsPerDay: 3,

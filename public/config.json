@@ -1,13 +1,14 @@
 {
-  "gameTitle": "Căn Phòng Tarot",
+  "gameTitle": "Tarot Ánh Trăng",
   "subtitle": "Bốc một lá bài — nhận thông điệp và món quà từ vũ trụ",
-  "shopName": "Tiệm Của Bạn",
+  "shopName": "Thịnh Thế Vinh Hoa",
   "turnsPerDay": 3,
   "pityEvery": 0,
   "voucherDays": 7,
   "codePrefix": "TAROT",
   "redeemNote": "Đưa mã này cho nhân viên khi thanh toán để nhận quà.",
   "prizePlan": "phan-bo-qua-2m-v2",
+  "brandPlan": "tarot-anh-trang-v1",
   "prizes": [
     { "id": "binh-nuoc",    "name": "Bình Nước Gấu Trượt Tuyết",        "desc": "Bình nước hình gấu trượt tuyết. Nhận tại quầy.",           "icon": "bottle",    "rarity": "legendary", "quantity": 100,   "rate": 0.005,   "weight": 100,     "voucher": true },
     { "id": "tui-nhua-dan", "name": "Túi nhựa đan nhiều màu",           "desc": "Túi nhựa đan nhiều màu. Nhận tại quầy.",                   "icon": "woven-bag",  "rarity": "legendary", "quantity": 500,   "rate": 0.025,   "weight": 500,     "voucher": true },

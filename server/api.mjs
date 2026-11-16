@@ -19,7 +19,7 @@ const DAY_MS = 86400000;
 const TOKEN_HOURS = 12;
 
 const DEFAULT_SETTINGS = {
-  gameTitle: 'Căn Phòng Tarot',
+  gameTitle: 'Tarot Ánh Trăng',
   subtitle: 'Bốc một lá bài — nhận thông điệp và món quà từ vũ trụ',
   shopName: '',
   turnsPerDay: 3,
@@ -441,12 +441,22 @@ export function createApi(opts = {}) {
       kvSet('settings', JSON.stringify(st));
       savePrizes(configPrizes(raw));
       if (plan) kvSet('prize_plan', plan);
+      if (typeof raw.brandPlan === 'string') kvSet('brand_plan', raw.brandPlan);
       log('[tarot] Đã tạo dữ liệu quà ban đầu từ public/config.json');
     } else if (plan && kvGet('prize_plan') !== plan) {
       savePrizes(configPrizes(raw));
       if (typeof raw.pityEvery === 'number') kvSet('settings', JSON.stringify({ ...settings(), pityEvery: raw.pityEvery }));
       kvSet('prize_plan', plan);
       log(`[tarot] Đã áp dụng bộ quà "${plan}" từ public/config.json`);
+    }
+    // A new `brandPlan` id renames the game once (title, shop name, subtitle); the admin can still edit them.
+    const brand = typeof raw.brandPlan === 'string' && raw.brandPlan.trim() ? raw.brandPlan.trim() : null;
+    if (brand && kvGet('brand_plan') !== brand) {
+      const st = settings();
+      for (const k of ['gameTitle', 'shopName', 'subtitle']) if (typeof raw[k] === 'string' && raw[k].trim()) st[k] = raw[k].trim();
+      kvSet('settings', JSON.stringify(st));
+      kvSet('brand_plan', brand);
+      log(`[tarot] Đã đổi tên game thành "${st.gameTitle}" (${brand})`);
     }
   } catch (e) {
     // a bad config must not take the server down: keep the current prizes and say why

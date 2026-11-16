@@ -33,7 +33,9 @@ const frame = () => {
   // face: eyes..chin fills the view; body: whole painting
   const [cy, h] = zoom === 'body' ? [WITCH_H / 2, WITCH_H * 1.05] : [WITCH_H * 0.7, WITCH_H * 0.36];
   const dist = h / 2 / Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
-  cam.position.set(0, cy, dist);
+  // ?orbit=25 swings the camera around her (degrees) to check the depth
+  const orbit = THREE.MathUtils.degToRad(Number(params.get('orbit') ?? 0));
+  cam.position.set(Math.sin(orbit) * dist, cy, Math.cos(orbit) * dist);
   cam.lookAt(0, cy, 0);
   cam.updateProjectionMatrix();
 };

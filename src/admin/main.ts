@@ -27,6 +27,8 @@ const ROUTES: Record<Route, { hash: string; title: string; icon: IconName; group
 
 const app = document.getElementById('app')!;
 const THEME_KEY = 'tarot-admin-theme';
+/** The game's name from settings (Cài đặt → Tên game); the login page reads it from /api/config. */
+let gameTitle = 'Tarot Ánh Trăng';
 let cleanup: (() => void) | null = null;
 let refreshTimer = 0;
 
@@ -34,6 +36,7 @@ const ctx: Ctx = {
   state: null as unknown as AdminState,
   setState(s) {
     ctx.state = s;
+    gameTitle = s.settings.gameTitle || gameTitle;
   },
   refreshShell: () => renderShell(),
 };
@@ -71,7 +74,7 @@ function parseHash(): { route: Route; params: URLSearchParams } {
 const brand = (sub: string) => `
   <div class="brand">
     <div class="brand-mark"><img src="${prizeIconUrl('crystal')}" alt=""></div>
-    <div><b>Căn Phòng Tarot</b><small>${esc(sub)}</small></div>
+    <div><b>${esc(gameTitle)}</b><small>${esc(sub)}</small></div>
   </div>`;
 
 // ---------------------------------------------------------------- login
@@ -152,7 +155,7 @@ function renderShell() {
           <div class="page-head">
             <div>
               <h1 id="page-title"></h1>
-              <div class="crumbs"><span>Căn Phòng Tarot</span>${icon('right', 13)}<b id="crumb"></b></div>
+              <div class="crumbs"><span>${esc(gameTitle)}</span>${icon('right', 13)}<b id="crumb"></b></div>
             </div>
             <div class="head-actions" id="head-actions"></div>
           </div>
@@ -177,7 +180,7 @@ async function renderRoute() {
     else a.removeAttribute('aria-current');
   });
   const r = ROUTES[route];
-  document.title = `${r.title} · Quản trị Căn Phòng Tarot`;
+  document.title = `${r.title} · Quản trị ${gameTitle}`;
   app.querySelector('#page-title')!.textContent = r.title;
   app.querySelector('#crumb')!.textContent = r.title;
   const actions = app.querySelector<HTMLElement>('#head-actions')!;
@@ -294,7 +297,20 @@ document.addEventListener('keydown', (e) => {
 });
 
 async function boot() {
-  if (!auth.token) return renderLogin();
+  if (!auth.token) {
+    renderLogin();
+    // show the shop's own name on the login page too
+    fetch(`${import.meta.env.BASE_URL}api/config`)
+      .then((r) => r.json())
+      .then((c) => {
+        if (c?.settings?.gameTitle && !auth.token) {
+          gameTitle = c.settings.gameTitle;
+          app.querySelectorAll('.login .brand b').forEach((b) => (b.textContent = gameTitle));
+        }
+      })
+      .catch(() => {});
+    return;
+  }
   try {
     ctx.setState(await api<AdminState>('GET', '/admin/state'));
     renderShell();

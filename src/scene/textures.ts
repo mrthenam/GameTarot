@@ -322,3 +322,117 @@ export function stoneTexture(): THREE.Texture {
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   return t;
 }
+
+/** Dark wooden floorboards for the room. */
+export function floorTexture(): THREE.Texture {
+  const W = 512, H = 512;
+  const [c, g] = canvas(W, H);
+  const r = rand(23);
+  g.fillStyle = '#140d1c';
+  g.fillRect(0, 0, W, H);
+  const plankH = 64;
+  for (let row = 0; row < H / plankH; row++) {
+    let x = -r() * 200;
+    while (x < W) {
+      const len = 180 + r() * 220;
+      const l = 30 + r() * 16;
+      const grad = g.createLinearGradient(0, row * plankH, 0, (row + 1) * plankH);
+      grad.addColorStop(0, `rgb(${l + 14},${l + 4},${l + 18})`);
+      grad.addColorStop(1, `rgb(${l},${l - 6},${l + 6})`);
+      g.fillStyle = grad;
+      g.fillRect(x + 2, row * plankH + 2, len - 4, plankH - 4);
+      // grain
+      g.globalAlpha = 0.18;
+      for (let k = 0; k < 6; k++) {
+        g.strokeStyle = r() < 0.5 ? '#000' : '#5a4468';
+        g.beginPath();
+        const y = row * plankH + 6 + r() * (plankH - 12);
+        g.moveTo(x + 4, y);
+        g.bezierCurveTo(x + len * 0.3, y + (r() - 0.5) * 6, x + len * 0.7, y + (r() - 0.5) * 6, x + len - 4, y);
+        g.stroke();
+      }
+      g.globalAlpha = 1;
+      x += len;
+    }
+  }
+  const t = tex(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+
+/** Alpha ramp along V (canvas top = far end): stops = [canvasY, gray] pairs; alphaMap reads green. */
+export function fadeAlphaTexture(stops: [number, string][] = [[0, '#000'], [0.45, '#000'], [0.75, '#fff'], [1, '#fff']]): THREE.Texture {
+  const [c, g] = canvas(4, 256);
+  const grad = g.createLinearGradient(0, 0, 0, 256);
+  for (const [t, col] of stops) grad.addColorStop(t, col);
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 4, 256);
+  return tex(c, false);
+}
+
+/** Soft dark disc for contact shadows. */
+export function shadowTexture(): THREE.Texture {
+  const S = 256;
+  const [c, g] = canvas(S);
+  const grad = g.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+  grad.addColorStop(0, 'rgba(0,0,0,0.85)');
+  grad.addColorStop(0.55, 'rgba(0,0,0,0.6)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, S, S);
+  return tex(c, false);
+}
+
+/** Wispy cloud blob for low-lying mist. */
+export function mistTexture(seed = 5): THREE.Texture {
+  const W = 512, H = 256;
+  const [c, g] = canvas(W, H);
+  const r = rand(seed);
+  for (let i = 0; i < 70; i++) {
+    const x = W * (0.15 + r() * 0.7);
+    const y = H * (0.35 + r() * 0.35);
+    const rad = 30 + r() * 70;
+    const grad = g.createRadialGradient(x, y, 0, x, y, rad);
+    const a = 0.05 + r() * 0.07;
+    grad.addColorStop(0, `rgba(255,255,255,${a})`);
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grad;
+    g.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+  }
+  // fade the borders so sprites never show an edge
+  g.globalCompositeOperation = 'destination-in';
+  const fx = g.createLinearGradient(0, 0, W, 0);
+  fx.addColorStop(0, 'rgba(0,0,0,0)');
+  fx.addColorStop(0.2, 'rgba(0,0,0,1)');
+  fx.addColorStop(0.8, 'rgba(0,0,0,1)');
+  fx.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = fx;
+  g.fillRect(0, 0, W, H);
+  const fy = g.createLinearGradient(0, 0, 0, H);
+  fy.addColorStop(0, 'rgba(0,0,0,0)');
+  fy.addColorStop(0.35, 'rgba(0,0,0,1)');
+  fy.addColorStop(0.75, 'rgba(0,0,0,1)');
+  fy.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = fy;
+  g.fillRect(0, 0, W, H);
+  return tex(c);
+}
+
+/** Vertical sliver of light: bright core, soft sides, fading at both ends. */
+export function seamTexture(): THREE.Texture {
+  const W = 32, H = 256;
+  const [c, g] = canvas(W, H);
+  const img = g.createImageData(W, H);
+  for (let y = 0; y < H; y++) {
+    const fy = Math.min(1, y / 30, (H - 1 - y) / 30);
+    for (let x = 0; x < W; x++) {
+      const dx = Math.abs(x - (W - 1) / 2) / (W / 2);
+      const a = Math.pow(Math.max(0, 1 - dx), 2.2) * fy;
+      const i = (y * W + x) * 4;
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = 255;
+      img.data[i + 3] = Math.round(a * 255);
+    }
+  }
+  g.putImageData(img, 0, 0);
+  return tex(c);
+}

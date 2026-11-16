@@ -1,4 +1,4 @@
-# Căn Phòng Tarot
+# Tarot Ánh Trăng
 
 Game web 3D (three.js + Vite + TypeScript). Người chơi bước qua cánh cửa ma thuật vào phòng của cô phù thủy, chọn 1 trong 11 lá bài đang bay lơ lửng (theo số lượt còn lại), phá 3 tầng phong ấn để mở lá bài và nhận **thông điệp** từ 22 lá Ẩn Chính kèm **một món quà thật/voucher** do cửa hàng cấu hình.
 
@@ -23,6 +23,7 @@ Mở `/admin.html`.
 - **Mật khẩu:** lần chạy đầu tiên, máy chủ tự tạo mật khẩu, in ra console và lưu ở `server/data/admin-password.txt`. Đổi được trong tab *Cài đặt*. Nếu đặt biến `ADMIN_PASSWORD` thì dùng mật khẩu đó.
 - **Dữ liệu:** nằm trong `server/data/tarot.db` (SQLite, không đưa vào git); trên Railway nằm trong volume `/data`. Lần đầu chạy, máy chủ chép quà và cài đặt từ `public/config.json`; từ đó sửa quà trên trang admin.
 - **Bộ quà theo kế hoạch (`prizePlan`):** khi `public/config.json` có giá trị `prizePlan` mới (khác lần trước), máy chủ thay toàn bộ danh sách quà bằng danh sách trong file và áp dụng `pityEvery` của file, đúng một lần lúc khởi động. Số đã trúng được giữ theo mã món. Đây là cách đưa một bảng phân bổ quà mới lên mọi máy chủ khi deploy. Sau đó, chỉnh sửa trên trang admin được giữ cho đến khi đổi `prizePlan` lần nữa.
+- **Đổi tên game theo kế hoạch (`brandPlan`):** tương tự, một giá trị `brandPlan` mới sẽ áp dụng `gameTitle`, `shopName`, `subtitle` của file đúng một lần. Hiện tại là "Tarot Ánh Trăng", tên quán "Thịnh Thế Vinh Hoa". Muốn đổi tiếp thì sửa trong admin, mục **Cài đặt**.
 
 Trang admin có thanh menu bên trái, thanh tìm nhanh mã quà ở trên, chế độ sáng/tối, và dùng được trên điện thoại.
 
@@ -82,8 +83,19 @@ Các trường cài đặt giống tab *Cài đặt*. Mỗi món trong `prizes[]
 ## Đã làm
 
 - Cảnh mở đầu: cánh cửa khắc rune có đuốc hai bên, bấm "Bước vào phòng" thì cửa mở và camera lướt vào phòng.
+  - Cánh cửa dựng 2.5D: hai cánh gỗ có độ dày thật (thấy mép khi cửa mở).
+  - Hoa văn vàng nổi khối, bắt ánh hai ngọn đuốc chập chờn; phần vàng bóng hơn phần gỗ.
+  - Rune tím phát sáng nhấp nháy, khe giữa hai cánh hắt ra vệt sáng ấm.
+  - Các bản đồ nổi khối dựng lại bằng `python scripts/door_maps.py`.
 - Căn phòng 3D: tranh nền (cửa sổ trăng tròn), bàn khăn nhung, nến lập lòe có ánh sáng, quả cầu pha lê, bụi ma thuật, bloom.
-- Phù thủy: một ảnh vẽ được dựng như con rối 2D (`src/scene/witch.ts`), không cần thêm ảnh nào.
+  - Khăn trải bàn buông tới sàn, có nếp gấp và sẫm dần về phía mép.
+  - Dưới bàn có sàn gỗ và bóng đổ. Sàn vẽ trong tranh nền được làm tối để hai lớp sàn nối nhau trong bóng tối.
+  - Sương mờ trôi sát mặt sàn che chỗ khăn chạm sàn, nên lúc đi qua cửa bàn không còn trông như khối trụ lơ lửng.
+  - Camera trôi nhẹ và lệch theo con trỏ, nên thấy được chiều sâu của phòng và phù thủy.
+- Phù thủy: một ảnh vẽ được dựng như con rối 2.5D (`src/scene/witch.ts`).
+  - **Khối:** bản đồ chiều sâu `src/assets/img/witch_depth.png` (dựng bằng `python scripts/witch_depth.py`) đẩy mặt, hai bàn tay và phần giữa thân về phía người xem.
+  - **Ánh sáng:** ánh nến ấm đổ theo hướng bề mặt (chập chờn theo ngọn nến), mép dáng người có viền ánh trăng, và có bóng mờ phía sau tách cô ấy khỏi tranh nền.
+  - **Đầu:** quay và gật thật quanh cổ, nên mũi dịch nhiều hơn mũ trùm.
   - **Chuyển động:** đầu nghiêng, gật, quay, kèm thở, đung đưa và tóc lay theo. Hai tay nâng lên, xòe ra, ngón tay múa khi làm phép, run khi hồi hộp.
   - **Khuôn mặt:** chớp mắt (đôi khi chớp hai lần), nháy mắt, mắt liếc, nhướn hoặc nhíu mày, cười, buồn, há miệng ngạc nhiên. Miệng mấp máy khi bong bóng thoại hiện chữ.
   - **Theo diễn biến game:**
@@ -116,6 +128,7 @@ Các trường cài đặt giống tab *Cài đặt*. Mỗi món trong `prizes[]
 ## Còn lại / gợi ý
 
 - Giọng nói và nhạc do AI tạo chưa làm được, vì khóa `GOOGLE_API_KEY` hiện tại không có quyền dùng Lyria (nhạc) hay Gemini TTS (giọng). Hiện tại âm thanh được tổng hợp bằng code và lời phù thủy hiện bằng chữ.
+- Phù thủy 3D thật: ảnh tham chiếu và prompt đã có, đang chờ mô hình GLB tạo trên web Tripo. Bản 2.5D hiện tại sẽ là phương án dự phòng.
 - Đếm lượt chơi trên máy chủ theo từng khách. Cần khách đăng nhập (số điện thoại Zalo) mới chống được việc xóa dữ liệu để có lượt mới.
 - Có thể thêm: chia sẻ lá bài lên mạng xã hội để nhận thêm lượt, phần thưởng khi hoàn thành bộ 22 lá.
 - **Tạm hoãn, chờ lệnh (13/11/2026): sửa theo [chính sách kiểm duyệt Zalo Mini App](https://miniapp.zaloplatforms.com/documents/zalo-mini-app-censorship-policy/?lang=vi).** Zalo không cho mở web bên ngoài qua webview, nên game phải được đóng vào chính gói Mini App (giới hạn 10 MB mỗi gói, 3 MB mỗi file; bản build hiện tại khoảng 7 MB). Việc cần làm khi bắt đầu:
@@ -135,7 +148,7 @@ node scripts/capture.mjs witch --w 1600 --h 900     # video phù thủy diễn, 
 node scripts/witchlab.mjs face                      # chụp từng biểu cảm (face|body) → screenshots/witchlab
 ```
 
-Trang `witchlab.html` (chỉ dùng khi phát triển) hiện riêng phù thủy ở cự ly gần để chỉnh khung rối. Trong console, `window.__ov = { uLid: [1, 1, 0, 0] }` ép một biểu cảm cụ thể.
+Trang `witchlab.html` (chỉ dùng khi phát triển) hiện riêng phù thủy ở cự ly gần để chỉnh khung rối. Thêm `&orbit=30` để nhìn lệch góc kiểm tra chiều sâu (với script: `ORBIT=30 node scripts/witchlab.mjs body`). Trong console, `window.__ov = { uLid: [1, 1, 0, 0] }` ép một biểu cảm cụ thể.
 
 Script dùng Chrome thật có GPU, bước thời gian cố định 1/30 s (`?capture=1`).
 
@@ -150,9 +163,12 @@ Script dùng Chrome thật có GPU, bước thời gian cố định 1/30 s (`?c
 | Phù thủy | Áo choàng tím, nửa người, đã tách nền | Billboard cao 1,62 m | `src/assets/img/witch.webp` (1020×1300) | 10¢ |
 | Căn phòng | Tranh nền cửa sổ trăng, kệ sách, nến | 2048×1143, phủ kín khung nhìn, đặt ở z = −3,4 m | `src/assets/img/room.webp` | 10¢ |
 | Cánh cửa | Cửa đôi gỗ mun khắc rune | 2,0×3,0 m, chia 2 cánh | `src/assets/img/door.webp` (848×1264) | 7¢ |
+| Nổi khối cánh cửa | Normal map (hoa văn vàng nổi, rune chìm), bản đồ vật liệu (vàng bóng, gỗ nhám), mặt nạ rune phát sáng | như cánh cửa | `src/assets/img/door_normal.webp`, `door_orm.webp`, `door_runes.webp` (từ `scripts/door_maps.py`) | 0 |
 | Icon quà (9) | star, hourglass, ticket, giftbox, tea, envelope, crown, cake, crystal (đã tách nền) | 72 px trong bảng; ~0,14 m trong cảnh | `src/assets/icons/*.webp` (384×384) | 10¢ |
 | Ảnh quà theo bộ phân bổ (12) | bottle, woven-bag, teddy, notebook, keychain, bracelet, topping, upsize, discount, buy2get1, bogo, wishcard (đã tách nền, cùng phong cách bộ icon cũ) | 72 px trong bảng; ~0,14 m trong cảnh | `src/assets/icons/*.webp` (384×384); bảng gốc `asset_src/misc/gifts_kit_a.png`, `gifts_kit_b.png` | 2 × 10¢ |
+| Chiều sâu phù thủy | Bản đồ độ sâu (trắng = gần): phồng theo dáng người, mặt hình bầu dục, hai bàn tay nhô ra | 510×650, đọc trong shader | `src/assets/img/witch_depth.png` (từ `scripts/witch_depth.py`) | 0 |
+| Phù thủy tư thế chữ T | Ảnh tham chiếu toàn thân để tạo mô hình 3D trên Tripo | — (chưa dùng trong game) | `asset_src/witch3d/witch_tpose_clean.png` | 10¢ |
 | Âm thanh | Nhạc nền và hiệu ứng tổng hợp bằng WebAudio | vòng lặp 8 ô nhịp, 72 BPM | `src/audio/audio.ts` | 0 |
 | Texture thủ tục | Phong ấn, vòng ma thuật, tia sáng, khăn nhung, tường đá | — | `src/scene/textures.ts` | 0 |
 
-**Tổng chi phí tạo tài nguyên: 2,18 $.**
+**Tổng chi phí tạo tài nguyên: 2,28 $.**

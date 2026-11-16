@@ -4,6 +4,7 @@
 // talk and change expression. All rig maths works in image pixels (x right, y down).
 import * as THREE from 'three';
 import witchUrl from '../assets/img/witch.webp?url';
+import depthUrl from '../assets/img/witch_depth.png?url';
 import { dotTexture } from './textures';
 
 export const WITCH_H = 1.62;
@@ -19,6 +20,8 @@ const HEAD_PIVOT: [number, number] = [512, 600];
 const HAND_PIVOT: [number, number][] = [[440, 1080], [584, 1080]];
 const HAND_C: [number, number][] = [[405, 800], [618, 800]];
 const HAND_R: [number, number] = [130, 255];
+/** How far (m) the depth map pushes the nearest parts (hands, face) toward the viewer. */
+const DEPTH = 0.2;
 
 // ------------------------------------------------------------------ expression model
 interface Face {
@@ -120,6 +123,7 @@ const VERT = /* glsl */ `
   uniform vec4 uBody;   // breath 0..1, rise px, sway px, hair swing px
   uniform vec4 uHandL;  // angle, dx, dy, flutter
   uniform vec4 uHandR;
+  uniform sampler2D uDepth;
   varying vec2 vUv;
   const vec2 IMG = vec2(${IW}.0, ${IH}.0);
 
@@ -160,8 +164,8 @@ const VERT = /* glsl */ `
     vec2 hp = vec2(${HEAD_PIVOT[0]}.0, ${HEAD_PIVOT[1]}.0);
     d += (rot(p - hp, uHead.x) + hp - p) * wHead;
     float wFace = exp(-pow((p.x - 512.0) / 150.0, 2.0) - pow((p.y - 370.0) / 185.0, 2.0));
-    d.x += uHead.y * (15.0 * wFace + 5.0 * wHead);
-    d.y += uHead.z * (11.0 * wFace + 5.0 * wHead);
+    d.x += uHead.y * (6.0 * wFace + 2.0 * wHead);
+    d.y += uHead.z * (5.0 * wFace + 2.0 * wHead);
 
     // hair strands at the sides swing a little behind the head
     float side = abs(p.x - 512.0);
@@ -181,6 +185,17 @@ const VERT = /* glsl */ `
     vec3 pos = position;
     pos.x += d.x * (${(WITCH_H * WITCH_ASPECT).toFixed(5)} / IMG.x);
     pos.y -= d.y * (${WITCH_H.toFixed(5)} / IMG.y);
+
+    // volume: the depth map pushes face, hands and the middle of the body toward the viewer
+    pos.z += texture2D(uDepth, uv).r * ${DEPTH.toFixed(3)};
+    // the head really turns and nods around the neck, so the nose moves more than the hood
+    vec3 hc = vec3(${((HEAD_PIVOT[0] / IW - 0.5) * WITCH_H * WITCH_ASPECT).toFixed(4)}, ${((1 - HEAD_PIVOT[1] / IH) * WITCH_H).toFixed(4)}, 0.05);
+    vec2 xz = rot(vec2(pos.x - hc.x, pos.z - hc.z), -uHead.y * 0.3 * wHead);
+    pos.x = hc.x + xz.x;
+    pos.z = hc.z + xz.y;
+    vec2 yz = rot(vec2(pos.y - hc.y, pos.z - hc.z), uHead.z * 0.16 * wHead);
+    pos.y = hc.y + yz.x;
+    pos.z = hc.z + yz.y;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
   }
 `;
@@ -193,6 +208,13 @@ const FRAG = /* glsl */ `
   uniform vec4 uLid;    // lidL, lidR, wide, squint
   uniform vec4 uMouth;  // smile, jaw, round, -
   uniform vec2 uGaze;   // iris shift, px
+  uniform sampler2D uDepth;
+  uniform vec3 uAmb;      // light on the painting: ambient, warm candle key (left), fill (right), moon rim
+  uniform vec3 uKeyDir;
+  uniform vec3 uKeyCol;
+  uniform vec3 uFillDir;
+  uniform vec3 uFillCol;
+  uniform vec3 uRimCol;
   varying vec2 vUv;
   const vec2 IMG = vec2(${IW}.0, ${IH}.0);
 
@@ -313,12 +335,35 @@ const FRAG = /* glsl */ `
       inside = mix(inside, vec3(0.5, 0.45, 0.42), teeth);
       col = mix(col, inside, cav);
     }
+    // shade the painting by the normals of its depth map: candlelight wraps the face and hands,
+    // the sides fall off, the moon behind her rims the silhouette. Front-facing parts keep their colour.
+    vec2 uq = toUv(q);
+    vec2 tx = vec2(2.0 / 510.0, 2.0 / 650.0);
+    float ddx = texture2D(uDepth, uq + vec2(tx.x, 0.0)).r - texture2D(uDepth, uq - vec2(tx.x, 0.0)).r;
+    float ddy = texture2D(uDepth, uq + vec2(0.0, tx.y)).r - texture2D(uDepth, uq - vec2(0.0, tx.y)).r;
+    vec3 n = normalize(vec3(-ddx * ${DEPTH.toFixed(3)} / (2.0 * tx.x * ${(WITCH_H * WITCH_ASPECT).toFixed(4)}),
+                            -ddy * ${DEPTH.toFixed(3)} / (2.0 * tx.y * ${WITCH_H.toFixed(4)}), 1.0));
+    vec3 lit = uAmb + uKeyCol * max(dot(n, uKeyDir), 0.0) + uFillCol * max(dot(n, uFillDir), 0.0);
+    vec3 flatLit = uAmb + uKeyCol * max(uKeyDir.z, 0.0) + uFillCol * max(uFillDir.z, 0.0);
+    col *= mix(vec3(1.0), lit / flatLit, 0.7);
+    col += uRimCol * pow(clamp(1.0 - n.z, 0.0, 1.0), 1.6) * c.a;
     col *= uTint;
     // violet magic light from the hands while casting
     float d = distance(p, vec2(${HANDS_PX[0]}.0, ${HANDS_PX[1]}.0)) / ${IW}.0;
     col += vec3(0.55, 0.35, 1.0) * uCast * 0.55 * (1.0 - smoothstep(0.0, 0.38, d)) * c.a;
     gl_FragColor = vec4(col, c.a);
     #include <colorspace_fragment>
+  }
+`;
+
+/** A soft shadow of her silhouette, a little behind and to the side: separates her from the wall. */
+const FRAG_SHADOW = /* glsl */ `
+  uniform sampler2D uMap;
+  uniform float uShadow;
+  varying vec2 vUv;
+  void main() {
+    float a = texture2D(uMap, vUv, 3.5).a;
+    gl_FragColor = vec4(0.0, 0.0, 0.0, a * uShadow);
   }
 `;
 
@@ -370,11 +415,33 @@ export class Witch {
   private tmpV = new THREE.Vector3();
   private tmpV2 = new THREE.Vector3();
   private camPos = new THREE.Vector3(0, 1.5, 3);
+  private depthPx: { w: number; h: number; data: Uint8ClampedArray } | null = null;
+
+  /** 0..1 depth of a painting pixel (1 = nearest the viewer). */
+  private depthAt(x: number, y: number) {
+    const d = this.depthPx;
+    if (!d) return 0;
+    const i = Math.min(d.h - 1, Math.max(0, Math.round((y / IH) * d.h))) * d.w + Math.min(d.w - 1, Math.max(0, Math.round((x / IW) * d.w)));
+    return d.data[i * 4] / 255;
+  }
 
   constructor() {
     const tex = new THREE.TextureLoader().load(witchUrl);
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = 8;
+    const depthTex = new THREE.TextureLoader().load(depthUrl);
+    depthTex.colorSpace = THREE.NoColorSpace;
+    // the same depth on the CPU, so glows and the speech bubble sit on her surface
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      const g = c.getContext('2d', { willReadFrequently: true })!;
+      g.drawImage(img, 0, 0);
+      this.depthPx = { w: img.width, h: img.height, data: g.getImageData(0, 0, img.width, img.height).data };
+    };
+    img.src = depthUrl;
     const geo = new THREE.PlaneGeometry(this.width, WITCH_H, 68, 88);
     geo.translate(0, WITCH_H / 2, 0); // origin at the bottom edge
     this.mat = new THREE.ShaderMaterial({
@@ -392,6 +459,13 @@ export class Witch {
         uLid: { value: new THREE.Vector4() },
         uMouth: { value: new THREE.Vector4() },
         uGaze: { value: new THREE.Vector2() },
+        uDepth: { value: depthTex },
+        uAmb: { value: new THREE.Vector3(0.55, 0.5, 0.68) },
+        uKeyDir: { value: new THREE.Vector3(-0.6, -0.2, 0.77).normalize() },
+        uKeyCol: { value: new THREE.Vector3(0.78, 0.52, 0.3) },
+        uFillDir: { value: new THREE.Vector3(0.66, -0.12, 0.74).normalize() },
+        uFillCol: { value: new THREE.Vector3(0.4, 0.3, 0.5) },
+        uRimCol: { value: new THREE.Vector3(0.09, 0.11, 0.24) },
       },
       vertexShader: VERT,
       fragmentShader: FRAG,
@@ -400,6 +474,17 @@ export class Witch {
     this.mesh.renderOrder = -5;
     this.group.add(this.rig);
     this.rig.add(this.mesh);
+    const shadow = new THREE.Mesh(geo, new THREE.ShaderMaterial({
+      uniforms: { ...this.mat.uniforms, uShadow: { value: 0.42 } },
+      vertexShader: VERT,
+      fragmentShader: FRAG_SHADOW,
+      transparent: true,
+      depthWrite: false,
+    }));
+    shadow.position.set(0.05, -0.02, -0.22);
+    shadow.scale.setScalar(1.025);
+    shadow.renderOrder = -6;
+    this.rig.add(shadow);
 
     const dot = dotTexture();
     for (let i = 0; i < 2; i++) {
@@ -495,7 +580,7 @@ export class Witch {
   /** Local (rig) position of a painting pixel after deformation. */
   private localPx(x: number, y: number, target: THREE.Vector3, z = 0.05) {
     const [qx, qy] = this.deformPx(x, y);
-    return target.set((qx / IW - 0.5) * this.width, (1 - qy / IH) * WITCH_H, z);
+    return target.set((qx / IW - 0.5) * this.width, (1 - qy / IH) * WITCH_H, z + this.depthAt(x, y) * DEPTH);
   }
 
   /** World position of a point on the image (u from left, v from top). */
@@ -672,6 +757,8 @@ export class Witch {
 
     const b = (0.93 + flicker * 0.05) * (1 - this.dim * 0.55);
     (u.uTint.value as THREE.Color).setRGB(b * 1.02, b * 0.97, b * 1.0);
+    // the candle key light breathes with the flames
+    (u.uKeyCol.value as THREE.Vector3).set(0.78, 0.52, 0.3).multiplyScalar(1 + flicker * 0.22);
     const eye = this.cast * (0.7 + 0.3 * Math.sin(time * 6)) * (1 - Math.max(lidL, lidR) * 0.8);
     for (let i = 0; i < 2; i++) {
       this.eyeMats[i].color.setRGB(1.6 * eye, 0.9 * eye, 0.3 * eye);

@@ -8,8 +8,11 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import roomUrl from '../assets/img/room.webp?url';
 import doorUrl from '../assets/img/door.webp?url';
+import doorNormalUrl from '../assets/img/door_normal.webp?url';
+import doorOrmUrl from '../assets/img/door_orm.webp?url';
+import doorRunesUrl from '../assets/img/door_runes.webp?url';
 import { Witch } from './witch';
-import { clothSideTexture, flameTexture, stoneTexture, tableTopTexture } from './textures';
+import { clothSideTexture, fadeAlphaTexture, flameTexture, floorTexture, mistTexture, seamTexture, shadowTexture, stoneTexture, tableTopTexture } from './textures';
 import { Particles, createMotes } from './fx';
 
 export const PLAY_CAM = new THREE.Vector3(0, 1.42, 3.0);
@@ -78,12 +81,19 @@ export class Stage {
   private ambient: THREE.HemisphereLight;
   readonly door = new THREE.Group();
   readonly doorLeaves: THREE.Group[] = [];
+  private torches: { light: THREE.PointLight; seed: number }[] = [];
+  private runeMats: THREE.MeshBasicMaterial[] = [];
+  private seam!: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+  private doorOpen = 0;
   readonly camTarget = PLAY_TARGET.clone();
   readonly camBase = INTRO_CAM.clone();
   readonly lookTarget = new THREE.Vector3(0, 1.5, DOOR_Z);
   shake = 0;
   roomDim = 0; // 0..1 darken the room around the reveal
   flicker = 0;
+  private mist: { s: THREE.Sprite; base: THREE.Vector3; seed: number; op: number }[] = [];
+  /** Darkens the painted floor at the bottom of the backdrop so it meets the 3D floor in shadow. */
+  private floorShade!: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   private parallax = new THREE.Vector2();
   private parallaxTarget = new THREE.Vector2();
   aspect = 1;
@@ -121,7 +131,17 @@ export class Stage {
     this.backdrop.position.set(0, 1.3, -3.4);
     this.backdrop.renderOrder = -10;
     this.scene.add(this.backdrop);
+    this.floorShade = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({
+        color: 0x05030a, transparent: true, depthWrite: false,
+        alphaMap: fadeAlphaTexture([[0, '#000'], [0.35, '#444'], [0.62, '#c8c8c8'], [1, '#f2f2f2']]),
+      }),
+    );
+    this.floorShade.renderOrder = -9;
+    this.scene.add(this.floorShade);
 
+    this.buildFloor();
     this.buildTable();
     this.buildCandles();
     this.ball = this.buildCrystalBall();
@@ -153,9 +173,65 @@ export class Stage {
     const disc = new THREE.Mesh(new THREE.CircleGeometry(1.15, 96), top);
     disc.rotation.x = -Math.PI / 2;
     disc.position.set(0, 0.84, -0.35);
-    const skirt = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.32, 0.84, 96, 1, true), side);
+    // the cloth falls to the floor in folds, darker toward the hem
+    const skirtGeo = new THREE.CylinderGeometry(1.15, 1.32, 0.84, 128, 8, true);
+    const pos = skirtGeo.attributes.position;
+    const col = new Float32Array(pos.count * 3);
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+      const t = (0.42 - y) / 0.84; // 0 at the table edge, 1 at the floor
+      const a = Math.atan2(z, x);
+      const fold = Math.pow(t, 1.6) * (0.035 * Math.sin(a * 14) + 0.018 * Math.sin(a * 23 + 1.3));
+      const r = Math.hypot(x, z) + fold;
+      pos.setXYZ(i, Math.cos(a) * r, y, Math.sin(a) * r);
+      const shade = 1 - 0.55 * Math.pow(t, 1.4) - 0.12 * Math.max(0, -Math.sin(a * 14)) * t;
+      col.set([shade, shade, shade], i * 3);
+    }
+    skirtGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    skirtGeo.computeVertexNormals();
+    side.vertexColors = true;
+    const skirt = new THREE.Mesh(skirtGeo, side);
     skirt.position.set(0, 0.42, -0.35);
     this.scene.add(disc, skirt);
+  }
+
+  /** Floorboards under the table (fading into the painting), a contact shadow and low mist. */
+  private buildFloor() {
+    const ft = floorTexture();
+    ft.repeat.set(5, 3);
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(12, 7.1),
+      new THREE.MeshStandardMaterial({
+        map: ft, transparent: true, color: 0x8c7aa8, roughness: 0.8,
+        // solid from the door to just past the table, then gone well before the painting
+        alphaMap: fadeAlphaTexture([[0, '#000'], [0.55, '#000'], [0.7, '#fff'], [1, '#fff']]),
+      }),
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(0, 0, 0.15);
+    floor.renderOrder = -8;
+    const shadow = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.6, 3.2),
+      new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, depthWrite: false, color: 0x000000 }),
+    );
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.set(0, 0.004, -0.35);
+    shadow.renderOrder = -7;
+    this.scene.add(floor, shadow);
+    // a few drifting wisps of mist that hug the floor and hide where the cloth meets it
+    const texs = [mistTexture(5), mistTexture(17), mistTexture(31)];
+    const spots: [number, number, number, number][] = [
+      [-1.5, 0.3, 0.6, 0.34], [1.4, 0.25, 0.55, 0.32], [0, 0.22, 1.2, 0.3], [-0.6, 0.35, -1.6, 0.26],
+      [0.8, 0.3, -1.7, 0.26], [-2.4, 0.4, -0.6, 0.28], [2.3, 0.38, -0.8, 0.28], [-0.9, 0.18, 1.6, 0.22], [1.0, 0.2, 1.7, 0.22],
+    ];
+    spots.forEach(([x, y, z, op], i) => {
+      const m = new THREE.SpriteMaterial({ map: texs[i % 3], color: 0xb8a4e6, transparent: true, opacity: op, depthWrite: false });
+      const sp = new THREE.Sprite(m);
+      sp.scale.set(3.4, 1.3, 1);
+      sp.position.set(x, y, z);
+      this.scene.add(sp);
+      this.mist.push({ s: sp, base: new THREE.Vector3(x, y, z), seed: i * 1.7, op });
+    });
   }
 
   private buildCandles() {
@@ -234,22 +310,59 @@ export class Stage {
     return ball;
   }
 
+  /**
+   * The entrance: two thick ebony leaves whose painted front is lit as relief (gold inlay raised,
+   * runes carved and glowing), two torches that really light them, and light leaking through the seam.
+   */
   private buildDoor() {
-    const tex = new THREE.TextureLoader().load(doorUrl);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    const H = 3.0, W = H * (848 / 1264);
+    const load = (url: string, srgb: boolean) => {
+      const t = new THREE.TextureLoader().load(url);
+      t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+      t.anisotropy = 8;
+      return t;
+    };
+    const tex = load(doorUrl, true);
+    const nrm = load(doorNormalUrl, false);
+    const orm = load(doorOrmUrl, false);
+    const runes = load(doorRunesUrl, true);
+    const H = 3.0, W = H * (848 / 1264), T = 0.09;
+    const front = new THREE.MeshStandardMaterial({
+      map: tex, color: 0xb4a8c4, normalMap: nrm, normalScale: new THREE.Vector2(1.6, 1.6),
+      roughnessMap: orm, metalnessMap: orm, roughness: 1, metalness: 1,
+      // keep the painting readable even where the torches don't reach
+      emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.34,
+    });
+    const body = new THREE.MeshStandardMaterial({ color: 0x1c1016, roughness: 0.75, metalness: 0.05 });
     for (const side of [-1, 1]) {
       const pivot = new THREE.Group();
       pivot.position.set(side * W / 2, 0, DOOR_Z);
       const geo = new THREE.PlaneGeometry(W / 2, H);
       const uv = geo.attributes.uv;
       for (let i = 0; i < uv.count; i++) uv.setX(i, side < 0 ? uv.getX(i) * 0.5 : 0.5 + uv.getX(i) * 0.5);
-      const leaf = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+      const leaf = new THREE.Group();
       leaf.position.set(-side * W / 4, H / 2, 0);
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(W / 2, H, T), body);
+      slab.position.z = -T / 2;
+      const face = new THREE.Mesh(geo, front);
+      face.position.z = 0.001;
+      const glowMat = new THREE.MeshBasicMaterial({
+        map: runes, color: 0xb48cff, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0.6,
+      });
+      const glow = new THREE.Mesh(geo, glowMat);
+      glow.position.z = 0.003;
+      this.runeMats.push(glowMat);
+      leaf.add(slab, face, glow);
       pivot.add(leaf);
       this.door.add(pivot);
       this.doorLeaves.push(pivot);
     }
+    // a thin line of warm light between the closed leaves
+    this.seam = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.035, H * 0.97),
+      new THREE.MeshBasicMaterial({ color: 0xffc98a, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0.7, map: seamTexture() }),
+    );
+    this.seam.position.set(0, H / 2, DOOR_Z + 0.004);
+    this.door.add(this.seam);
     const st = stoneTexture();
     st.repeat.set(4, 3);
     const wallMat = new THREE.MeshBasicMaterial({ map: st, color: 0x8a7a9a });
@@ -287,7 +400,13 @@ export class Stage {
       const bracket = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 0.3, 12), trim);
       bracket.position.set(side * (W / 2 + 0.55), 1.82, DOOR_Z + 0.1);
       this.door.add(f, bracket);
-      this.candles.push({ flame: f, light: new THREE.PointLight(), base: 0, seed: Math.random() * 100, s: 3.2 });
+      const seed = Math.random() * 100;
+      this.candles.push({ flame: f, light: new THREE.PointLight(), base: 0, seed, s: 3.2 });
+      // the torch light grazes the carved leaves (kept in the scene so the light count never changes)
+      const tl = new THREE.PointLight(0xff9a4a, 0, 4.5, 2);
+      tl.position.set(side * (W / 2 + 0.5), 2.1, DOOR_Z + 0.45);
+      this.scene.add(tl);
+      this.torches.push({ light: tl, seed });
     }
     this.scene.add(this.door);
   }
@@ -296,6 +415,7 @@ export class Stage {
     // p 0..1, leaves swing away from the camera
     this.doorLeaves[0].rotation.y = p * 1.75;
     this.doorLeaves[1].rotation.y = -p * 1.75;
+    this.doorOpen = p;
   }
 
   /** Camera-space → world point, for placing things relative to the view. */
@@ -333,6 +453,11 @@ export class Stage {
     this.backdrop.scale.set(s, s, 1);
     // Moon sits ~33% from the top of the painting: line it up behind the witch's head.
     this.backdrop.position.y = 2.3 - 0.17 * s * (1143 / 2048);
+    // shade the painted floor from below the backdrop up to a little above floor level
+    const bottom = this.backdrop.position.y - (s * (1143 / 2048)) / 2;
+    const top = 0.55;
+    this.floorShade.scale.set(s, top - bottom, 1);
+    this.floorShade.position.set(this.backdrop.position.x, (top + bottom) / 2, this.backdrop.position.z + 0.02);
     const pr = this.renderer.getPixelRatio();
     this.particles.uniforms.uScale.value = h * pr * 0.5 / Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
     this.motes.uniforms.uScale.value = this.particles.uniforms.uScale.value;
@@ -364,6 +489,17 @@ export class Stage {
       }
     }
     this.flicker = fl / 2;
+    // torches, glowing runes and the light in the seam only matter while the door is there
+    const atDoor = this.door.visible;
+    for (const t of this.torches) {
+      const n = Math.sin(time * 8.3 + t.seed) * 0.5 + Math.sin(time * 13.1 + t.seed * 2) * 0.3;
+      t.light.intensity = atDoor ? 2.6 * (1 + n * 0.22) : 0;
+    }
+    if (atDoor) {
+      this.runeMats.forEach((m, i) => (m.opacity = (0.5 + 0.22 * Math.sin(time * 1.9 + i * 1.3)) * (1 - this.doorOpen * 0.6)));
+      const op = this.doorOpen;
+      this.seam.material.opacity = (0.55 + 0.15 * Math.sin(time * 3.1)) * (op < 0.02 ? 1 : Math.max(0, 1 - op * 4));
+    }
     this.witch.dim = this.roomDim;
     this.witch.update(dt, time, this.flicker, this.camera);
     const bd = 1 - this.roomDim * 0.62;
@@ -374,13 +510,18 @@ export class Stage {
     this.ball.material.uniforms.uPulse.value = 0.3 + 0.2 * Math.sin(time * 1.7);
     this.motes.uniforms.uTime.value = time;
     this.particles.update(dt);
+    for (const m of this.mist) {
+      m.s.position.set(m.base.x + Math.sin(time * 0.11 + m.seed) * 0.35, m.base.y + Math.sin(time * 0.23 + m.seed) * 0.04, m.base.z);
+      (m.s.material as THREE.SpriteMaterial).opacity = m.op * (0.8 + 0.2 * Math.sin(time * 0.31 + m.seed * 2)) * (1 - this.roomDim * 0.5);
+    }
 
     // Camera: base position + parallax + shake
     this.parallax.lerp(this.parallaxTarget, 1 - Math.exp(-dt * 2));
     const cam = this.camera;
     cam.position.copy(this.camBase);
-    cam.position.x += this.parallax.x * 0.06;
-    cam.position.y += -this.parallax.y * 0.03;
+    // pointer parallax plus a slow drift, so the depth of the witch and the room reads on its own
+    cam.position.x += this.parallax.x * 0.12 + Math.sin(time * 0.17) * 0.03;
+    cam.position.y += -this.parallax.y * 0.05 + Math.sin(time * 0.11 + 1) * 0.012;
     if (this.shake > 0.001) {
       cam.position.x += (Math.sin(time * 61) + Math.sin(time * 37)) * 0.5 * this.shake * 0.02;
       cam.position.y += (Math.sin(time * 53) + Math.sin(time * 29)) * 0.5 * this.shake * 0.02;

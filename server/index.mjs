@@ -40,5 +40,5 @@ createServer((req, res) => {
   res.setHeader('Cache-Control', rel.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache');
   createReadStream(file).pipe(res);
 }).listen(PORT, () => {
-  console.log(`Căn Phòng Tarot: http://localhost:${PORT}  ·  admin: http://localhost:${PORT}/admin.html`);
+  console.log(`Tarot Ánh Trăng: http://localhost:${PORT}  ·  admin: http://localhost:${PORT}/admin.html`);
 });

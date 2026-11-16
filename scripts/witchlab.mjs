@@ -46,14 +46,15 @@ const page = await browser.newPage({ viewport: size, deviceScaleFactor: 1 });
 const errors = [];
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
 page.on('pageerror', (e) => errors.push(e.message));
-await page.goto(`http://localhost:5173/witchlab.html?zoom=${zoom}&still`, { waitUntil: 'networkidle' });
+const orbit = process.env.ORBIT ?? '0';
+await page.goto(`http://localhost:5173/witchlab.html?zoom=${zoom}&still&orbit=${orbit}`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(1200);
 const files = [];
 for (const [name, ov] of Object.entries(poses)) {
   if (only && name !== only) continue;
   await page.evaluate((o) => { window.__ov = o; window.__t = 0; }, { ...Z, ...ov });
   await page.waitForTimeout(150);
-  const f = path.join(outDir, `${zoom}_${name}.png`);
+  const f = path.join(outDir, `${zoom}${orbit !== '0' ? `_o${orbit}` : ''}_${name}.png`);
   await page.screenshot({ path: f });
   files.push([name, f]);
 }
